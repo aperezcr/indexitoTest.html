@@ -1,0 +1,2889 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--
+                - http-equiv: Contiene la información equivalente a las indicaciones en el encabezado HTTP.
+                        - Cache-Control: Especifica las directivas para los mecanismos de almacenamiento en caché
+                          tanto en las solicitudes como en las respuestas.
+                                - no-cache: Obliga a los cachés a enviar la solicitud al servidor de origen para su
+                                  validación antes de liberar una copia en caché.
+                                - no-store: El caché no debe almacenar nada sobre la solicitud del cliente o la respuesta
+                                  del servidor.
+                                - must-revalidate: El caché debe verificar el estado de los recursos obsoletos antes de
+                                  usarlo y los caducados no deben usarse.
+                        - Pragma: Se usa para implementar retrocompatibilidad con cachés de tipo HTTP/1.0 donde
+                          la cabecera Cache-Control aún no esté presente.
+                        - Expires: Contiene la fecha y hora en la que se considerará la respuesta caducada.
+                        - Content-Type: Indica el tipo de medio del recurso.
+                                - text/html: Datos de solo texto que incluye contenido legible.
+                                - charset=utf-8: Codificación de caracteres.
+        -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <!--
+                - viewport: Área donde se vera el contenido web.
+                - device-width: Es el equivalente al ancho de la pantalla en píxeles, en una escala de 100%
+                - initial-scale: Nivel de zoom cuando la página se carga por primera vez.
+                - maximum-scale, minimum-scale, y user-scalable: controlan la forma en cómo se permite a los
+                  usuarios aumentar o disminiuir el zoom en la página.
+        -->
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--Codificación de caracteres de la pagina web.-->
+    <meta charset="utf-8">
+    <!--Título de la página web-->
+    <title>SPAD- Sistema de Prevencion Alertas y Desastres</title>
+    <!--
+                - link: Especifica la relación entre el documento actual y un recurso externo.
+                        - href: especifica la URL del recurso enlazado.
+                                - rel: Indica la relación del documento enlazado con el actual.
+                                        * stylesheet: Especifica el enlace a una hoja de estilos externa.
+                                - type: Define el tipo de contenido al que se enlaza.
+                                        * text/css: Indica un formato de Hoja de Estilos en Cascada.
+        -->
+    <link href="https://fonts.googleapis.com/css?family=Exo" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='font/LiquidCrystal-ExBold.otf') }}" rel="stylesheet" type="text/css">
+
+    <!--
+                - script: Inserta o hacer referencia a un script ejecutable dentro de el documento HTML.
+                        - src: Especifica la URI del script externo.
+        -->
+    <!--<script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-base.min.js?hcode=a0c21fc77e1449cc86299c5faa067dc4"></script>-->
+    <script src="../static/js/anychart-base.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-circular-gauge.min.js?hcode=a0c21fc77e1449cc86299c5faa067dc4"></script>
+    <script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-exports.min.js?hcode=a0c21fc77e1449cc86299c5faa067dc4"></script>
+    <script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-ui.min.js?hcode=a0c21fc77e1449cc86299c5faa067dc4"></script>
+    <script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-base.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-ui.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-exports.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-linear-gauge.min.js"></script>
+    <script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-table.min.js"></script>
+    <link href="https://cdn.anychart.com/releases/8.10.0/css/anychart-ui.min.css" type="text/css" rel="stylesheet">
+    <link href="https://cdn.anychart.com/releases/8.10.0/fonts/css/anychart-font.min.css" type="text/css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script><!--fabio nuevo js-->  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.27/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.27/esri/css/esri.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/otros.css') }}">
+    <!--<link rel="stylesheet" href="css/otros.css">-->
+    <link rel="stylesheet" href="../static/css/otros.css">
+    <!--cambiofabio cssotros-->
+
+
+    <!--
+                Relaciona el JavaScript oidc-client.min.js.
+                En este archivo se encuentra la biblioteca oidc-client, la cual proporciona soporte de protocolo
+                para OIDC y OAuth2, así como funciones de administración para sesiones de usuario y administración
+                de tokens de acceso.
+        -->
+
+    <!--Relaciona el archivo pruebaTopic.js.-->
+    
+    <script src="../static/js/pruebaTopic.js"></script>
+    <script src="../static/js/graficas/velocidad_viento_km.js"></script>
+    <script src="../static/js/cajameteo.js"></script>
+    <script src="../static/js/caja_flujo.js"></script>
+    <script src="../static/js/caja_lidar.js"></script>
+    <script src="../static/js/caja_inclinometro.js"></script>
+    <script src="../static/js/caja_suelo.js"></script>
+    <script src="../static/js/unidades_nuevas.js"></script>
+    <script src="../static/js/clienteMeteorologicas.js"></script>
+    
+    <script src="../static/js/indicadores.js"></script>
+    <script src="../static/js/camunda.js"></script>
+    <script src="../static/js/mqttws31.js"></script>
+    <script src="../static/js/menu_areas.js"></script>
+    <script src="../static/js/consultas_unidades.js"></script>
+    <script src="../static/js/id_cliente.js"></script>
+    <script src="../static/js/arcgis.js"></script>
+    <script src="../static/js/Eventos_conpacifico.js"></script>
+    <script src="../static/js/unidades_conpacifico.js"></script>
+    <script src="../static/js/lectura_meteo.js"></script>
+    <script src="../static/js/oidc-client.min.js"></script>
+    <script type="../static/js/confAuth.js"></script>
+    <script src="../static/js/getInit.js"></script>
+    <script src="../static/js/RGraph.svg.line.js"></script>
+    <script src="../static/js/RGraph.meter.js"></script>
+    <script src="../static/js/RGraph.odo.js"></script>
+    <script src="../static/js/RGraph.bar.js"></script>
+    <script src="../static/js/RGraph.thermometer.js"></script>
+    <script src="../static/js/RGraph.drawing.image.js"></script>
+
+    <script src="../static/js/RGraph.common.core.js"></script>
+    <script src="../static/js/RGraph.common.dynamic.js"></script>
+    <script src="../static/js/RGraph.line.js"></script>
+
+    <script src="../static/js/RGraph.svg.common.core.js"></script>
+    
+
+    <script src="{{ url_for('static', filename='js/oidc-client.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/confAuth.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/getInit.js') }}"></script>
+    
+    <!--<script src="{{ url_for('static', filename='js/oidc-client.min.js') }}"></script>-->
+    <!--Relaciona el archivo confAuth.js donde se gestiona la API de inicio de sesión.-->
+    <!--<script type="text/javascript" src="{{ url_for('static', filename='js/confAuth.js') }}"></script>-->
+    <!--Relaciona el archivo getUser.js donde detecta si el usuario ha iniciado sesión en la aplicación.-->
+    <!--<script src="{{ url_for('static', filename='js/getUser.js') }}"></script>-->
+
+    <!--Relación de las librerias para generar las tablas o graficas que apareceran en el sitio web SPAD-->
+    <!--
+                Librerias Canvas
+                - https://www.rgraph.net/libraries/src/RGraph.meter.js
+                - https://www.rgraph.net/libraries/src/RGraph.odo.js
+                - https://www.rgraph.net/libraries/src/RGraph.bar.js
+                - https://www.rgraph.net/libraries/src/RGraph.thermometer.js
+        -->
+    <script src="{{ url_for('static', filename='js/RGraph.meter.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/RGraph.odo.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/RGraph.bar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/RGraph.thermometer.js') }}"></script>
+    <!--
+                Librerias Canvas Common
+                - https://www.rgraph.net/libraries/src/RGraph.common.core.js
+                - https://www.rgraph.net/libraries/src/RGraph.common.dynamic.js
+        -->
+    <script src="{{ url_for('static', filename='js/RGraph.common.core.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/RGraph.common.dynamic.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/RGraph.line.js') }}"></script>
+
+    <script src="../static/js/RGraph.svg.common.core.js"></script>
+    <script src="../static/js/RGraph.svg.line.js"></script>    
+
+    <!--
+                Librerias Canvas Drawing API
+                - https://www.rgraph.net/libraries/src/RGraph.drawing.image.js
+        -->
+    <script src="{{ url_for('static', filename='js/RGraph.drawing.image.js') }}"></script>
+
+    <!--
+                jsPDF es una librería para JavaScript gratuita para cualquier tipo de proyectos que permite generar
+                PDF con JavaScript de manera muy sencilla y sin depender de otros lenguajes.
+        -->
+    <script type="module" src="https://unpkg.com/jspdf@latest/dist/jspdf.es.min.js"></script><!--fabio definir type: module-->
+    <!--
+                Este complemento jsPDF tiene como objetivo facilitar la generación de tablas pdf, ya sea desde HTML
+                o directamente desde Javascript.
+        -->
+    <script type="module" src="https://unpkg.com/jspdf-autotable@2.3.1/dist/jspdf.plugin.autotable.js"></script>
+    <!--
+                Este complemento sirve para generar un screenshot de lo que tenemos en pantalla.
+        -->
+    <script type="text/javascript" src="https://github.com/niklasvh/html2canvas/releases/download/0.4.1/html2canvas.js"></script>
+    <!--
+                Este complemento de jQuery facilita la validación de formularios en el lado del cliente, a la vez que
+                ofrece muchas opciones de personalización.
+                El complemento viene con un conjunto útil de métodos de validación, incluida la validación de URL y correo
+                electrónico, al tiempo que proporciona una API para escribir sus propios métodos. Todos los métodos incluidos
+                vienen con mensajes de error predeterminados en inglés y traducciones a otros 37 idiomas.
+        -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/jquery.validate.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.17.0/additional-methods.js"></script>
+    <!-- Mensajes predeterminados traducidos para el complemento de validación de jQuery. -->
+    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/localization/messages_es.js"></script>
+    <!--
+                Es una librería para crear notificaciones de 4 tipos: Informativas(info), exito(success), advertencia(warning)
+                y error(danger), estas estan diferenciadas por diferentes colores como azul, verde, amarillo y rojo respectivamente.
+        -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <!-- Es la libreria para que se analice, valide, manipule y muestre fechas y horas en JavaScript. -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/locale/es-us.js"></script>
+    <!-- Es el complemento para trabajar Bootstrap-->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/i18n/defaults-es_ES.min.js"></script>
+
+    <!--Relaciona el archivo exportar_excel.js.-->
+    <script src="{{ url_for('static', filename='js/exportar_excel.js') }}"></script>
+    <!--Relaciona el archivo exportar_csv.js.-->
+    <script src="{{ url_for('static', filename='js/exportar_csv.js') }}"></script>
+
+    <!--
+                El complemento jQuery BlockUI permite simular un comportamiento sincrónico cuando se usa AJAX, sin bloquear el navegador.
+                Cuando se activa, evitará la actividad del usuario con la página (o parte de la página) hasta que se desactive. BlockUI
+                agrega elementos al DOM para darle tanto la apariencia como el comportamiento de bloquear la interacción del usuario.
+        -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.js"></script>
+
+    <!--
+                Con el fichero sweetalert.min.js conseguimos dar a los usuarios notificaciones y alertas de un modo mucho más visual.
+                Con este plugin jQuery daremos un aspecto a los mensajes que lancemos a los usuarios acorde a las tendencias actuales.
+        -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+
+    <!--Relaciona el archivo clienteProcedimientos.js.-->
+    <script src="{{ url_for('static', filename='js/clienteProcedimientos.js') }}"></script>
+
+    <!--Relaciona el archivo exportar_reporte.js.-->
+    <script src="{{ url_for('static', filename='js/exportar_reporte.js') }}"></script>
+
+    <!--Relaciona el archivo mqttws31.js. el cual es la libreria de conexión.-->
+    <script src="{{ url_for('static', filename='js/mqttws31.js') }}"></script>
+
+
+    <!--Relaciona el archivo proceso_camunda.js.-->
+    <script src="{{ url_for('static', filename='js/proceso_camunda.js') }}"></script>
+
+    <!--Relaciona el archivo parpadeo_alertas.js.-->
+    <script src="{{ url_for('static', filename='js/parpadeo_alertas.js') }}"></script>
+
+    <!--Relaciona el archivo movimiento_pane2.js.-->
+    <script src="{{ url_for('static', filename='js/movimiento_pane2.js') }}"></script>
+
+    <!--Relaciona el archivo tiempo_modal.js.-->
+    <script src="{{ url_for('static', filename='js/tiempo_modal.js') }}"></script>
+
+    <!--Relaciona el archivo eventos_herramientas.js.-->
+    <script src="{{ url_for('static', filename='js/eventos_herramientas.js') }}"></script>
+
+    <!-- <script>
+                $(document).ready(function() 
+                {
+                        var refreshId =  setInterval( function()
+                        {
+                                $('#map').load('indexito.html');//actualizas el div
+                                console.log('En honor a fabio');
+                        },1000 );
+                });
+
+        </script> -->
+
+    <!--Relaciona el archivo otros.css.-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/otros.css') }}">
+
+    <!--Relaciona el archivo favico.png con el cual se colocara el icono de SPAD.-->
+    <link rel="shortcut icon" href="../static/imagenes/favico.png" /><!--fabio cambio de ruta-->
+
+    <!--
+                Codigo donde se genera la parte de estilos de la pagina, se asocian todos los elementos
+                que iran en la pagina(botones, cajas, div, imagenes, textos, etc...).
+        -->
+    <link rel="stylesheet" href="../static/imagenes/menu/font-awesome/css/font-awesome.min.css">
+        <!--Graficas de unidades-->
+        <script src="../static/js/graficas/complex_gauge.js"></script>
+        <script src="../static/js/graficas/direccion_viento.js"></script>
+        <script src="../static/js/graficas/elevacion.js"></script>
+        <script src="../static/js/graficas/frecuencia.js"></script>
+        <script src="../static/js/graficas/gauge.js"></script>
+        <script src="../static/js/graficas/termometro.js"></script>
+        <script src="../static/js/graficas/wind_direction.js"></script>
+    <style>
+         .gradient-text {
+    /* Fallback: Set a background color. */
+    background-color: red;
+    
+    /* Create the gradient. */
+    background-image: linear-gradient(178deg, #29F29B, #01A1FA);
+    
+    /* Set the background size and repeat properties. */
+    background-size: 100%;
+    background-repeat: repeat;
+  
+    /* Use the text as a mask for the background. */
+    /* This will show the gradient as a text color rather than element bg. */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; 
+    -moz-background-clip: text;
+    -moz-text-fill-color: transparent;
+    border: solid;
+    border-radius: 100%;
+    padding: 3px 8px;
+  }
+        .toast-bottom-left {
+            top: 19%;
+        }        
+
+
+.tooltip>.tooltip-inner {
+    text-align: left;
+    background-color: #fff;
+    color: #000;
+    font-size: 13px;
+    max-width: 280px !important;
+    border-radius: 0px 20px 0px 0px;
+    border: solid 3px #2e8d7b;
+}
+
+.tooltip.in {
+    opacity: 1;
+    filter: alpha(opacity=100);
+}
+
+.spadCamunda {
+    width: 21%;
+    height: 76%;
+    overflow: auto;
+    margin-top: 171px;
+    position: fixed;
+    right: 0;
+}
+
+.dijitBorderContainerPane {
+    z-index: auto !important;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #151f27;
+    border-color: #235559;
+}
+
+.btn-primary:hover {
+    color: #fff;
+    background-color: #5d7b79;
+    border-color: #204d74;
+}
+.none1{
+    display:none;
+}
+
+@font-face {
+    font-family: "pruebitaflash";
+    src: url("../static/font/LiquidCrystal-ExBold.otf") format("opentype");
+}
+
+.blue {
+    color: blue;
+}
+
+.red {
+    color: red;
+}
+
+.toast-container {
+    position: absolute;
+    top: 150px;
+    width: 250px;
+    right: 0px;
+    height: auto;
+}
+
+.toast-amarillo-inundacion {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAAGz7rX1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA69JREFUeNpi/P//PwMyYIIxGBkZ94PpX79+MZw/f54FyP5jaGjICBLcCMT/ofggQAAxIpvBdPPmTcGmpiZdsF6oEjBgBmJ2IN4ExBwAAcQA0gPVBzPoD0yMiQEVfIfqhgMlqI5SKL0aSisBBBDc2ObmZnEYG2wN1C5vmH1HjhzhRLZr7fTp0y2AAoxQ4xnQXQfCJSAxkIp+IH4DxD+B2AiIdwGxL8ypn4H4IVTHBxANs+MHEEsC8W0g5gTi1wABxIDsRKh91kj2maHLw70CVRyE5kBkXHDjxg12DE1AQTaI58AG2ALxZCCeDXIOMExssNqEHBSZmZmlUP4yWPCjqWPYz8vLawrlqAHxNiC2BPGBmuWhfFBgMwDViQLZ50EK/dFMkcfmeSR5f4AAwioRHR2NUyMKZ9cuUKQxXIb64eiiRYtwazh37hwjLDbRcBGGhkePHjHjiZfXQGyOLTJXuri4xEDZ7SA6Li4OxP6IbAMLUjY4AsQaixcvBrHFgPm1AkjbATEfSu5B8oMRkjO+IzsLKMeOLff9hNJ/gRKcpaWljEhyKLaIQT32ODAwkANIg7L/PagBekAxHiB9FohfgpwM0jAL6iQQuxeIe0CmQz2fBsTzgXIsUP4MEDETyb3LoakWxl8LxLuR+KsYWFlZZZBimgsYlBy4kgVQLS8seU8B4jNIJoEKug4k/kmobf8BAlRa7iANQ1EYDvUxWAdbEAdxcggqqItgQVARRRzr4GOoiC6K4O6inZtZsiiKm0MQFJxcOuik4CoOLoIQVAxWQUX8Tjkpl5qWNvBB09x7Hsk5579WteoMoaaG9EW8warjOLFa9kUWrAmdKhFPQqFKqR17ntdVtxNGhFTZYhXDlXiAcfbHKjrxfV9EYKuCgUdtScGBTZjS4XoHz2TeV08mrWrok+YqTRhmvXwXN5vNjpnr0+m0p+IwXI8TmagbmoFU+FONr2tGGiDKSbkCWrZtf7H40mi3Dv19k8vl+l3Xld5cVl0yr17V3f9XlGectBuKKhSY2uvmGu53yjLZZ18yyp5EdQizRdUnWniHOAxCsxHPL9yreLZADyTLYr5Wgf2BUWiCIym3pSAIpI074QCuZKKmUqluEfUQPnyC/yX6WziFCZq09Jz1CZ0CebiAAeyK/UwoAHEdRmfafFJh85DRCCWyc9jTkdhQ1CrLWoE2XZPXM8QLfMMCrEGjxWlLHNlwYrzfD81KUh6RqGFXN4dr5Lg2pycIKe9teDWeSzbTYv8PCVan+G7wOpIAAAAASUVORK5CYII=");
+    background-color: #FFC900;
+    color: #3c3636 !important;
+}
+
+.toast-amarillo-deslizamiento {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAAGz7rX1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAnFJREFUeNpi/P//PwMyYAERjIyMCFGoigIQDVPdABEHc/4DBBADkowAI1gECpig9EEksyB6AAIIrgcqoADEH6BaDViA9jtAdWwA4gtAzA/lK8Cth2GoCQdANEAAMaJ7B8UXSPYdgOlmAtqVAPIv1M8boOonMiDZkQC1+D/UMWCGA1S1A5JChKuQ7HBAlnCAhwAQAwQQiqvQMVTnAyTNBiBxJmRvQV3uAGVPAEUBNDBAMfERpgbkzQYgfgDEBVC9AVA6H0rDgvwANC4uMqC4FckPMA8iBz1IE5iGuR3JDw1IoQFTrAflP0BJU1jwBaQA+YAkrgAQQLgjGwdgwicJCj1YOgDiD3g1QBOLApIQP1gTklsnwDwLC0W00ALJN4D9ALWOH8k0R1COg7L9ofRFUGgxQa2egJSwGZEy0AMo/yKQNoBp/o+Wlj7AghXKX4CUtrEm4w/ISRrNHyBD4TphkgVQTROgfAO03AQWEIC6OwHqhAdIBsDyPYyPNWkg25gA5UcQ0qCAHCdI/sJQ+AEtNy5AlgcI0GkV1DAMw8BBKIRCKIFJgxAIg1AIgxAIgRAIgRAIhWAGnVSdp5vjNm0ffrSJ7PPZ5/hQumcNPETkLirx3/lNp3LEF/XAdBiEuTL/A5wEQ36AjqUJ5qRdHVSFJkfxhgGCKYC3AbT1VO6kXuH8ie+ZRtUKcC/cEzOC/y7yaOJsiukaMZQIQOrI+xiVxAc9OD0bd5wEUtIKSSYCMuyNd6YkG6RqiwagjquogwJI/BwUpwaBHv/RWQimnQWhUbPWJCHQcpI6W6uMIAE12BaCZu+5aGKoGpxmmO8GiR2BuoC+1NT2KncLLq8AAAAASUVORK5CYII=");
+    background-color: #FFC900;
+    color: #3c3636 !important;
+}
+
+.toast-amarillo-deslizamientolidar {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAAGz7rX1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAbdJREFUeNpiYCAWvAfi/8gCIM5+EAMggJBBAxOQWI+u7D5M738oTgAIIGRZByh7PzYbQLgfZjg2SRgWAAkCBBA24IDiPijdD9UF5idg0wbyyAMk8+HGsKAp3I+sAx0kgghGJCejAIAAIgQMkMLuP7pXMEIEi7v2Y9NAKMQasIXgfwL4PL5QgIEHaCHjiB4o+GxCTiJgPkAAMRIRggpQDPLrBnTJADT+enQbWdBChB/JFAVo/BC0HlvwgkKrAN1qfKABPXgDoG6cT8gJ6PGRgJQnG/DlG/TwX08o0/1Hy7LvcURkArH5gRHqzAe40tQHAmkMZ1pyQJPfj2zDBRyZ6T5yGgIIMGoAAxyuM8AVdwbQODOAxuN+HGlQACmrrCdULGILXHu0wPyAI/BBGbiQ3GBpoCDoGrDpZ8JS0NVDE2IAtSKNCUf6E0DKIveh8aNAriUsBJIjrGyB5f4D0IQggJYRQOIXgVgeiB/is5CYIn4/EWr+Q4PbgRRLYPFzH6258J9IR+Gtc9Djh1CcCEILHhCegCtOiAUKaPFRCM1bIB8vgPpaAJ+LkQus80QERwOa3gIo+z1ycAEA79XEkCK0jLoAAAAASUVORK5CYII=");
+    background-color: #FFC900;
+    color: #3c3636 !important;
+}
+
+.toast-naranja-inundacion {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAAGz7rX1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA69JREFUeNpi/P//PwMyYIIxGBkZ94PpX79+MZw/f54FyP5jaGjICBLcCMT/ofggQAAxIpvBdPPmTcGmpiZdsF6oEjBgBmJ2IN4ExBwAAcQA0gPVBzPoD0yMiQEVfIfqhgMlqI5SKL0aSisBBBDc2ObmZnEYG2wN1C5vmH1HjhzhRLZr7fTp0y2AAoxQ4xnQXQfCJSAxkIp+IH4DxD+B2AiIdwGxL8ypn4H4IVTHBxANs+MHEEsC8W0g5gTi1wABxIDsRKh91kj2maHLw70CVRyE5kBkXHDjxg12DE1AQTaI58AG2ALxZCCeDXIOMExssNqEHBSZmZmlUP4yWPCjqWPYz8vLawrlqAHxNiC2BPGBmuWhfFBgMwDViQLZ50EK/dFMkcfmeSR5f4AAwioRHR2NUyMKZ9cuUKQxXIb64eiiRYtwazh37hwjLDbRcBGGhkePHjHjiZfXQGyOLTJXuri4xEDZ7SA6Li4OxP6IbAMLUjY4AsQaixcvBrHFgPm1AkjbATEfSu5B8oMRkjO+IzsLKMeOLff9hNJ/gRKcpaWljEhyKLaIQT32ODAwkANIg7L/PagBekAxHiB9FohfgpwM0jAL6iQQuxeIe0CmQz2fBsTzgXIsUP4MEDETyb3LoakWxl8LxLuR+KsYWFlZZZBimgsYlBy4kgVQLS8seU8B4jNIJoEKug4k/kmobf8BAlRa7iANQ1EYDvUxWAdbEAdxcggqqItgQVARRRzr4GOoiC6K4O6inZtZsiiKm0MQFJxcOuik4CoOLoIQVAxWQUX8Tjkpl5qWNvBB09x7Hsk5579WteoMoaaG9EW8warjOLFa9kUWrAmdKhFPQqFKqR17ntdVtxNGhFTZYhXDlXiAcfbHKjrxfV9EYKuCgUdtScGBTZjS4XoHz2TeV08mrWrok+YqTRhmvXwXN5vNjpnr0+m0p+IwXI8TmagbmoFU+FONr2tGGiDKSbkCWrZtf7H40mi3Dv19k8vl+l3Xld5cVl0yr17V3f9XlGectBuKKhSY2uvmGu53yjLZZ18yyp5EdQizRdUnWniHOAxCsxHPL9yreLZADyTLYr5Wgf2BUWiCIym3pSAIpI074QCuZKKmUqluEfUQPnyC/yX6WziFCZq09Jz1CZ0CebiAAeyK/UwoAHEdRmfafFJh85DRCCWyc9jTkdhQ1CrLWoE2XZPXM8QLfMMCrEGjxWlLHNlwYrzfD81KUh6RqGFXN4dr5Lg2pycIKe9teDWeSzbTYv8PCVan+G7wOpIAAAAASUVORK5CYII=");
+    background-color: #f89406;
+    color: #3c3636 !important;
+}
+
+.toast-naranja-deslizamiento {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAAGz7rX1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAnFJREFUeNpi/P//PwMyYAERjIyMCFGoigIQDVPdABEHc/4DBBADkowAI1gECpig9EEksyB6AAIIrgcqoADEH6BaDViA9jtAdWwA4gtAzA/lK8Cth2GoCQdANEAAMaJ7B8UXSPYdgOlmAtqVAPIv1M8boOonMiDZkQC1+D/UMWCGA1S1A5JChKuQ7HBAlnCAhwAQAwQQiqvQMVTnAyTNBiBxJmRvQV3uAGVPAEUBNDBAMfERpgbkzQYgfgDEBVC9AVA6H0rDgvwANC4uMqC4FckPMA8iBz1IE5iGuR3JDw1IoQFTrAflP0BJU1jwBaQA+YAkrgAQQLgjGwdgwicJCj1YOgDiD3g1QBOLApIQP1gTklsnwDwLC0W00ALJN4D9ALWOH8k0R1COg7L9ofRFUGgxQa2egJSwGZEy0AMo/yKQNoBp/o+Wlj7AghXKX4CUtrEm4w/ISRrNHyBD4TphkgVQTROgfAO03AQWEIC6OwHqhAdIBsDyPYyPNWkg25gA5UcQ0qCAHCdI/sJQ+AEtNy5AlgcI0GkV1DAMw8BBKIRCKIFJgxAIg1AIgxAIgRAIgRAIhWAGnVSdp5vjNm0ffrSJ7PPZ5/hQumcNPETkLirx3/lNp3LEF/XAdBiEuTL/A5wEQ36AjqUJ5qRdHVSFJkfxhgGCKYC3AbT1VO6kXuH8ie+ZRtUKcC/cEzOC/y7yaOJsiukaMZQIQOrI+xiVxAc9OD0bd5wEUtIKSSYCMuyNd6YkG6RqiwagjquogwJI/BwUpwaBHv/RWQimnQWhUbPWJCHQcpI6W6uMIAE12BaCZu+5aGKoGpxmmO8GiR2BuoC+1NT2KncLLq8AAAAASUVORK5CYII=");
+    background-color: #f89406;
+    color: #3c3636 !important;
+}
+
+.toast-naranja-deslizamientolidar {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAAGz7rX1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAbdJREFUeNpiYCAWvAfi/8gCIM5+EAMggJBBAxOQWI+u7D5M738oTgAIIGRZByh7PzYbQLgfZjg2SRgWAAkCBBA24IDiPijdD9UF5idg0wbyyAMk8+HGsKAp3I+sAx0kgghGJCejAIAAIgQMkMLuP7pXMEIEi7v2Y9NAKMQasIXgfwL4PL5QgIEHaCHjiB4o+GxCTiJgPkAAMRIRggpQDPLrBnTJADT+enQbWdBChB/JFAVo/BC0HlvwgkKrAN1qfKABPXgDoG6cT8gJ6PGRgJQnG/DlG/TwX08o0/1Hy7LvcURkArH5gRHqzAe40tQHAmkMZ1pyQJPfj2zDBRyZ6T5yGgIIMGoAAxyuM8AVdwbQODOAxuN+HGlQACmrrCdULGILXHu0wPyAI/BBGbiQ3GBpoCDoGrDpZ8JS0NVDE2IAtSKNCUf6E0DKIveh8aNAriUsBJIjrGyB5f4D0IQggJYRQOIXgVgeiB/is5CYIn4/EWr+Q4PbgRRLYPFzH6258J9IR+Gtc9Djh1CcCEILHhCegCtOiAUKaPFRCM1bIB8vgPpaAJ+LkQus80QERwOa3gIo+z1ycAEA79XEkCK0jLoAAAAASUVORK5CYII=");
+    background-color: #f89406;
+    color: #3c3636 !important;
+}
+
+.toast-rojo-inundacion {
+    background-image: url("data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAAGz7rX1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABGlJREFUeNpi/P//PwMyYIIxfv78uR5EM379+tUJSFeA2EC8HCTwAMh4AhXQAgggBpAZv379UgPRTP/+/eMHikrB9MKNZ0S2CiCAwBygUoYfP37ARbm4uBjhbmBigjtFD9mBLN++fTsIpPdA+V4gAihWD6SSAAII7BQQ/vLlyzQYG2wviAC65hjIRSAMVNCNLPH19+/fpiD2379/jcEeAZkLZHABfbYLaP7/79+/OyJ76hfUpSwg+0GuB3FegEIOiN8D8W0g5gTimyyMjIyZQM8KQgWuA7ED0H8XAQKIAdmJUGevhrkQFMx//vxhQlfDAnUYI9BBz4BMCaDpsMB5CMSHgDH3goODwwZowy2UaAUq/A+UkIeKdQPxFSAG8WOBWBSIxVASA5rTroKcBTQ9C8QH0tOgAbkaJaSBggrQQHVAM8ARGMjMMD5Q3gYYKExAWh+mIBbIOQzEQVC+G5B9EkjngPigCADyD8L4AAHoKHsUhIEgCqtBUVIYBNFSKwk2kkZvIZjGQ2jtFTyCINhZ2FoKgqUgdgrBI2glwcLCn29kVkzUhQezO5PZmZd5+8Ue2Ys45/HzyBAYQG35g2rpw49/8B5ZAuqwt0v8WDDqQPU5obMgwU2C17G4FdiSsGOCIxRz/RgttMUOw3BkzrEf/0rqcYuPmQYtYJmEtm0nv2QH1x43bPVc9OKCrvaQpaxrpCSUUFFmLh9lvtjCV3wPJOqQZpuaeU9ZN1GMzlwgeuDmo/oDkWueTCX+aMlkQWby81yzx5dlX3s1rZIbAhv0NdMEnMBA91N9lgYpnhJhxQNVy7JSGZZoFDQwC/rU3GWPnRE6D9p0ToYMLCkpDcQ3Axt8jk7u4ilApWXzClEYhfE7izt3ZqHGR1hgYSiRmPwBxsqCta8dKVsLVkpKFko2bMSwYaNsLGiSLGxlgVmoCVmYJkxKaUrk99RruvPJvPU095x7zznve55zzjtWsSJz1Vct+99z1dgL8hxFWvmXbR7ZuQsum0nQPtntsUqvY3zM+v3+mGugZq2sIHqGnS4cnyJWW/9fr+AJ+02CRQj2kTW1XQF8BBgjgGblFdBU3QK74F1VyTdtkLRj2/adbODAR9q0oQ6cj+I8VmgHmSA4T9MD26TJS5pakPuogrjjOLo6xM0n8yuE0yDQ8RtAE9/VEFz3V2WxY+ZxoluMIGGMz8pIl2V4Wcv0XaFbOKOAPD5O5QZHXidNHtUzv6qsoxxTncwpdRJ1Vzu7n1GzGE6uQQAoFSlzsYSA/gmIk0NQBRoNZ+Kj23B5j98D0h/l+UvN8gCewTTE26bJAvTCIrqk6Y0k8jxE15tZYCNPob8E3yABIuhalW78eJHHwa3e6yQelP1EnDW7tEx7n4Nl8AbqwCQYcGVBp10BcaARMQ6GzEWtdaE5Q3o3lKYFVSOpWoWLtKsAKiiAQfSdbOQGHk4o3+ff95zGQ5X18j5seiSK/SOcZsjEfgT9sIJMIC/pYi9SOCnz/yJolb8S6rUfcVfNfr+MBx4AAAAASUVORK5CYII=");
+    background-color: #bd362f;
+    color: #fff !important;
+}
+
+.toast-rojo-deslizamiento {
+    background-image: url("data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAAGz7rX1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyVJREFUeNpi/P//PwMyYAER3759Q4iCVHz9+rUARINVAzkNQPwfKvEfIIAYYWYAtRkwgkRgWpmgdCOYRNYDEEAMMNOgAgZAfAAkAcQJLECDHIAaQLgeiDcCsQHUqAdw62EYasIDEA0QQIzo3kF3CcydC0BeBGEmZA5QbgJUzUFkjwRycXFtACr4gGyUI8iFQEEFIM0PwixQif1QGuZkRRYkuxWBRj2A2nUfIIBQQgEdg8Ic2Z+gkAGJMyF5QwHq8gaYt4CUABAvBNrCCBID0gtg3mwA4gdAMQWofhgdj+bejbAggDkDZv0HKO0A40PlD8DUgWgWqLWMSJHogBQqF6B0DzQQHoI4oMBugMY2OpgINKwAI1UCIwUgAN9UcIMwDAOjij/doGyQjgADIHUDymZsACN0hHYCRkCdAHzoTjqiFEtWEstJ7LvzX/QMxYP2m+ogi4/wrBhaaNK2PXnBH3k7NxMEE95azgRYyQ2G4orGkfAqXoe4hnAobgzvGF8aJp+8TpIHmPs4o5eF8SzxHYl1J9yRSPnghyx4fyYY+LMUlbDGxRb9xQr9z8lmV9M4MjbafEtGw5cHYt6bRLJJZ6ZULjjvCuprBvncw8+1HlKBViIvgn2tMS0IZTfb7z8CdFY2twkDQRQGNxBTgV2COyAdYCrAVBDSQZrgDEjcoQN85wIdQAUJHWSe8000WDJ/K62sXa3n9703nVh6dJF/SYMdd1Mx1t+85OSBWvWis+SGoaqF3/97hykl+lQNpW4NL/+AdmEvFNBVJnZRUs+3lm39MEO0DpGOrDMkOiEWrswKaKGuF9Ay60gqGqiRpSkOSyA0sLOYWyOSB3CaufynHMShPiU4Bicn8KgMZzitmB8b10E7K9ChAjEbDoRmXiqTHJG5t3IcSvMrRHcXJs02MKwgMAU/SPSgw+iYrET+lUrkswJ0fbkD7kdoVRmqI+H+ca7XpHomWu2lPagdYdQ8JUp9U+eC3WcMpjYgml6pXFVI7ZklOX4P43NC1nvbc4FJZfXG5y84OIbG9jAmmH/YXjsFvArJE4Yv3ifbRewlfGhzS5l9q3+/LvR7pSpigCcAAAAASUVORK5CYII=");
+    background-color: #bd362f;
+    color: #fff !important;
+}
+
+.toast-rojo-deslizamientolidar {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAAGz7rX1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAeBJREFUeNpiYCAK/P///z0Q/0cWAIH9IDZAACELNjABifXoyu6DCEYkAxIBAghZ1gHK3o/NBhDohxmOTRIGBEDiAAGEzeEOKO6D0v1QXQ0gTgI2nUxA/ADJfLgxLGgK98NczYTFFLBHGWFORpcFCCBCYW4ACzt0NzBghAim5v1Y44dQiGEYCrL2P2FwHjnccIEHaCHjCAsUfJoUwEEIBEAqHojfwyQAAoiRiBBUgBogANS/AV0yAI2/HtlD8KhGChF+IN6AZLIBMdZji4LzQFyAYjUBgxrQgzcA6sz5hAIBPWgTkPJkA758gw7W4810aBL9sBIDC0ggKj+AYhzkTFCywZU8PuBKY7g0wNzrCDUd5AIHdA0XsGjcD3UKPA0BBBjFAJq9sQEDrHEH1dAApROgWdwAi8ECSKUprpTlgC/D2qNl2A9YYucDEDsCmYVkBQu+wosYvdj0M6EXdEBmPTQhBlAr3phwpD9Q0lqPlLcSsGV/YgELgeQIKxfnQ317AFoYCaBlBJD4RSCWB+KH+MKTmCJ+/3/iwHuMmoqAJeD4Qarq7v8nHuwnVH2gxA+sOsEDBBmhAMiegCtOiAUKaPFRCM1bIB8vAJXiaHGGkYvhNT+00iAEGtD0FkDZ75GDCwBgNP6T1uLQrAAAAABJRU5ErkJggg==");
+    background-color: #bd362f;
+    color: #fff !important;
+}
+
+#cvs6 {
+    background: url(../static/imagenes/montana.png);
+    margin-top: -160px;
+    position: fixed;
+    z-index: 0;
+}
+/*nuevos ventana*/
+
+#wrapper1 {
+    padding-right: 22%;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#wrapper {
+    padding-right: 0;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+}
+
+#wrapper.toggled {
+    padding-right: 0;
+}
+/*prueba*/
+
+#wrapper.toggled1,
+#wrapper.toggled2,
+#wrapper.toggled3 {
+    padding-right: 21.5%;
+}
+
+#sidebar-wrapper,
+#sidebar2-wrapper,
+#sidebar3-wrapper {
+    z-index: 1000;
+    position: fixed;/*cambio*/
+    right: 0;
+    width: 0;
+    height: 90%;
+    margin-left: -250px;
+    overflow-y: auto;
+    -webkit-transition: all 0.5s ease;
+    -moz-transition: all 0.5s ease;
+    -o-transition: all 0.5s ease;
+    transition: all 0.5s ease;
+    overflow: scroll;
+}
+
+
+#wrapper.toggled #sidebar-wrapper,
+#wrapper.toggled #sidebar2-wrapper,
+#wrapper.toggled #sidebar3-wrapper {
+    width: 0%;
+}
+/*borrar-cambio*/
+
+#wrapper.toggled1 #sidebar-wrapper,
+#wrapper.toggled2 #sidebar2-wrapper,
+#wrapper.toggled3 #sidebar3-wrapper {
+    width: 0px;
+}
+
+#page-content-wrapper {
+    width: 100%;
+    position: absolute;
+    padding: 0px;
+}
+
+#wrapper.toggled #page-content-wrapper,
+#wrapper.toggled2 #page-content-wrapper,
+#wrapper.toggled3 #page-content-wrapper {
+    position: absolute;
+    margin-right: -250px;
+}
+/*borrar*/
+
+#wrapper.toggled1 #page-content-wrapper,
+#wrapper.toggled2 #page-content-wrapper,
+#wrapper.toggled3 #page-content-wrapper {
+    position: absolute;
+    margin-right: 0px;
+}
+
+@media only screen and (max-width: 770px) and (min-width: 1299px) {
+      /* For landscape layouts only */
+      .logo{
+        width: 111%;
+        right: -17%;
+        vertical-align: text-bottom;
+        position: absolute;
+        bottom: -177px;
+        right: 10px;
+    }
+}
+
+@media only screen and  (min-width: 769px){
+      /* For landscape layouts only */
+      .logo{
+        width: 111%;
+        right: -17%;
+        vertical-align: text-bottom;
+        position: absolute;
+        bottom: -179px;
+    }
+    .spadCamunda{
+        width: 100%;
+    }
+    .tituloscaja{
+        font-size: 7px;
+    }
+    }    
+@media only screen and  (min-width: 1300px){
+      /* For landscape layouts only */
+      .logo{
+        width: 100%;
+        right: -6%;
+        vertical-align: text-bottom;
+        position: absolute;
+        bottom: -178px;
+    }
+    .tituloscaja{
+        font-size: 10px;
+    }
+    }
+@media only screen and  (min-width: 1400px){
+      /* For landscape layouts only */
+      .logo{
+        width: 71%;
+        right: 24%;
+        vertical-align: text-bottom;
+        position: absolute;
+        bottom: -178px;
+    }
+    }
+
+
+@media(min-width:768px) {
+    #wrapper {
+        padding-left: 0;
+    }
+    #wrapper.toggled {
+        padding-left: 0;
+    }
+    /*borrar*/
+    #wrapper.toggled1,
+    #wrapper.toggled2,
+    #wrapper.toggled3 {
+        padding-left: 0;
+    }
+    #sidebar-wrapper1,
+    #sidebar2-wrapper1 {
+        width: 25.5%!important;
+    }
+    /*originalcambio*/
+    #sidebar-wrapper,
+    #sidebar2-wrapper {
+        width: 0;
+    }
+    #wrapper.toggled #sidebar-wrapper {
+        width: 0;
+    }
+    #wrapper.toggled2 #sidebar-wrapper {
+        width: 0;
+    }
+    #wrapper.toggled3 #sidebar-wrapper {
+        width: 0;
+    }
+    /*borrar*/
+    #wrapper.toggled1 #sidebar-wrapper,
+    #wrapper.toggled2 #sidebar2-wrapper,
+    #wrapper.toggled3 #sidebar3-wrapper {
+        width: 22.5%!important;
+    }
+    #page-content-wrapper {
+        padding: 0px;
+        /*position: relative;*/
+        position: fixed;
+    }
+    #wrapper.toggled #page-content-wrapper {
+        position: relative;
+        margin-right: 184;
+    }
+    #wrapper.toggled2 #page-content-wrapper {
+        position: relative;
+        margin-right: 184;
+    }
+    /*originalcambio*/
+    #wrapper.toggled1 #page-content-wrapper,
+    #wrapper.toggled2 #page-content-wrapper,
+    #wrapper.toggled3 #page-content-wrapper {
+        position: relative;/*cambio*/
+        margin-right: 184;
+    }
+    /*#draggablePanelList{
+        display: block!important;
+    }*/
+    .graficasvertical{
+        display: block;
+    }
+    .listagraficas{
+        display: none!important;
+    }
+    #E1{
+        display: block!important;
+    }
+    .modal-dialog{/*cambiomodal*/
+        width: 80%;
+    }
+    /*.logo{
+        width: 111%;
+        right: -17%!important;
+        vertical-align: text-bottom;
+        position: absolute;
+        bottom: -176px;
+        right: 10px;
+    }*/
+    .btnx{
+        display: none!important;
+    }
+    .listagraficas{
+        display: none!important;
+    }
+    .btnuni{
+        width: 50%!important;
+    }
+    #wrapper.toggled1, #wrapper.toggled2, #wrapper.toggled3{
+        padding-right: 21.5%!important;
+    }
+    .spadCamunda{
+        width: 100%;
+    }
+}
+@media(min-width:360px) {
+    #wrapper {
+        padding-left: 0;
+    }
+    #wrapper.toggled {
+        padding-left: 0;
+    }
+    /*borrar*/
+    #wrapper.toggled1,
+    #wrapper.toggled2,
+    #wrapper.toggled3 {
+        padding-left: 0;
+    }
+    #sidebar-wrapper1,
+    #sidebar2-wrapper1 {
+        width: 100.5%;
+    }
+    /*originalcambio*/
+    #sidebar-wrapper,
+    #sidebar2-wrapper {
+        width: 0;
+    }
+    #wrapper.toggled #sidebar-wrapper {
+        width: 0;
+    }
+    #wrapper.toggled2 #sidebar-wrapper {
+        width: 0;
+    }
+    #wrapper.toggled3 #sidebar-wrapper {
+        width: 0;
+    }
+    /*borrar*/
+    #wrapper.toggled1 #sidebar-wrapper,
+    #wrapper.toggled2 #sidebar2-wrapper,
+    #wrapper.toggled3 #sidebar3-wrapper {
+        width: 100.5%;
+    }
+    #page-content-wrapper {
+        padding: 0px;
+        /*position: relative;*/
+        position: fixed;
+    }
+    #wrapper.toggled #page-content-wrapper {
+        position: relative;
+        margin-right: 184;
+    }
+    #wrapper.toggled2 #page-content-wrapper {
+        position: relative;
+        margin-right: 184;
+    }
+    /*originalcambio*/
+    #wrapper.toggled1 #page-content-wrapper,
+    #wrapper.toggled2 #page-content-wrapper,
+    #wrapper.toggled3 #page-content-wrapper {
+        position: relative;/*cambio*/
+        margin-right: 184;
+    }
+    /*#draggablePanelList{
+        display: none;
+    }*/
+    .graficasvertical{
+        display: block;
+    }
+    .listagraficas{
+        display: initial;
+    }
+    #E1{
+        display: none;
+    }
+    /*.modal-dialog{
+        width: 99%;
+        margin: 30px 4px;
+    }*/
+    /*.logo{
+        width: 100%;
+        position: absolute;
+        bottom: -65px;
+        right: -16px;
+    }*/
+
+    .menuresponsive{
+        width: 100%;
+    }
+    .btnx{
+        display: initial;
+    }
+    .btnuni{
+        width: 40%;
+    }
+    #wrapper.toggled1, #wrapper.toggled2, #wrapper.toggled3{
+        padding-right: 0;
+    }
+}
+        #grafica1,
+        #grafica2,
+        #grafica3,
+        #grafica1_responsive,
+        #grafica2_responsive,
+        #grafica3_responsive,
+        #grafica4,
+        #grafica4,
+        #grafica5,
+        #grafica6{
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #container1 {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        #lidar1{
+            width: 118%;
+            height: 135%;
+            margin: -14px;
+            padding-top: 0;
+            background: url(../static/imagenes/montana.png);
+            background-size: cover;
+        }
+        .anychart-credits-text {
+            display: none !important;
+        }
+        .anychart-credits{
+            display: none !important;
+        }
+
+        #tipo_pendiente{
+            /*background: url(./img/pendiente50m.png) no-repeat;
+            background-size: contain;*/
+            width: 100%;
+            height: 100%;
+            /*margin-top: 20%;*/
+            padding-left: 10%;
+            /*padding-top: 20%;*/
+            position: relative;
+            left: 0px;
+            top: 0px;
+            overflow: hidden;
+        }
+        #zona{
+            /*background: url(./img/pendiente50m.png) no-repeat;
+            background-size: contain;*/
+            width: 100%;
+            height: 100%;
+            /*margin-top: 20%;*/
+            padding-left: 0%;
+            /*padding-top: 20%;*/
+            position: relative;
+            left: 0px;
+            top: 0px;
+            overflow: hidden;
+        }
+        #velocidad_de_flujo{
+            /*background: url(./img/viento_alto.png) no-repeat;*/
+            width: 100%;
+            height: 100%;
+            /*margin-top: 20%;*/
+            padding-left: 10%;
+            /*padding-top: 20%;*/
+            position: relative;
+            left: 0px;
+            top: 0px;
+            overflow: hidden;
+        }
+        #clima{
+            /*background: url(./img/clima-soleado.png) no-repeat;*/
+            width: 100%;
+            height: 100%;
+            /*margin-top: 20%;*/
+            padding-left: 10%;
+            /*padding-top: 20%;*/
+            position: relative;
+            left: 0px;
+            top: 0px;
+            overflow: hidden;
+        }
+        #nivel_de_agua{
+            /*background: url(./img/nivel_de_agua.png) no-repeat;*/
+            width: 100%;
+            height: 100%;
+            /*margin-top: 20%;*/
+            padding-left: 10%;
+            /*padding-top: 20%;*/
+            position: relative;
+            left: 0px;
+            top: 0px;
+            overflow: hidden;
+        }
+
+        @media(min-width:360px) {
+
+            .imggra{
+                width: 50%; 
+                height: auto; 
+                float: left; 
+                margin: 0; 
+                padding-top: 6%;
+            }
+            .imggra{
+                margin-top: 20%;
+            }
+            /*#draggablePanelList {
+               display: none;
+            }*/
+            .spadCamunda{
+                width: 100%;
+            }
+            .panel-default{
+                height: auto!important;
+            }
+            .fondograficasres{
+                height: 200px;
+                background-size: cover!important ;
+            }
+            .datoresponsive{
+                padding-top: 43px!important;
+            }
+
+
+        }
+
+        @media(min-width:768px) {
+            .pendiente{
+                width: 60%; 
+                height: auto; 
+                float: left; 
+                margin: 0; 
+                padding-top: 20%;
+            }
+            .pendientet{
+                margin-top: 20%;
+            }
+            /*#draggablePanelList {
+               display:block!important;
+            }*/
+            .spadCamunda{
+                width: 21%;
+            }
+            .panel-default{
+                height: 100%!important;
+            }
+            .fondograficasres{
+                height: 114px;
+                background-size: cover!important ;
+            }
+
+        }
+    </style>
+
+    <!--Relaciona el archivo para la implementación de Dojo en ArcGis-->
+    <script src="https://js.arcgis.com/3.27/"></script>
+
+    <!--Relaciona el archivo arcgis.js.-->
+    <script src="{{ url_for('static', filename='js/arcgis.js') }}"></script>
+    <!--<script src="../static/js/getuserlocal.js"></script>borrar script-->
+</head>
+
+<body style="background-image: url(../static/imagenes/fondo.png); background-repeat: repeat-x;" class="claro"> 
+<!--<body style="background-image: url(../static/imagenes/fondo.png); background-repeat: repeat-x;" class="claro" onload="Unidades();getuserlocal()">descomentar-->
+    <!-- Modal: modal para el formulario de inicio de alerta manual en camunda -->
+    <div class="modal custom fade" id="trackModal" style="width: 0.1%; margin: 0 auto;" tabindex="-1" role="dialog" aria-labelledby="trackModalLabel" aria-hidden="true">
+        <div class="modal-dialog spadCamunda sidebar-color">
+            <div class="modal-content" style="border-radius: 0 40px 0 0;">
+                <div class="modal-header" style="background: linear-gradient(to right, #244847, #34b092); border-radius: 0 40px 0 0;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color: white; margin-right: 2px;">&times;</span></button>
+                    <h4 class="getlaid" id="trackModalLabel" style="color: white;">Iniciar Procedimiento</h4>
+                </div>
+
+                <div class="modal-body" style="background: #80a09b;">
+                    <form id="modalFormProcess">
+                        <div id="statusAlertModal">
+                        </div><br>
+                        <div style="display: none;" id="divClasificacion">
+                            <label for="clasificacionAlertaSelect">Tipo de alerta:</label>
+                            <div>
+                                <input id="clasificacionAlertaSelect" name="clasificacionAlertaSelectName" class="form-control" disabled>
+                            </div>
+                        </div><br>
+                        <div style="display: none;" id="divTipo">
+                        </div><br>
+                        <div style="display: none;" id="textAreaModal">
+                            <label for="reasonAlert">Descripción alerta:</label>
+                            <div>
+                                <h6 class="pull-right" id="count_message"></h6>
+                                <textarea rows="8" id="reasonAlert" class="form-control" maxlength="3000" name="reasonAlert" style="resize: none;" required></textarea>
+                            </div>
+                        </div><br><br>
+                        <div id="buttonsModalForm" style="display: none;">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Continuar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal: Fin modal para inicio de alerta en camunda -->
+
+    <!-- Modal: modal para las unidades meteorologicas -->
+    <div class="modal fade" id="modalMeteorologica" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="z-index: 1053;">
+        <div class="modal-dialog" role="document" style="margin: 30px -6px;">
+            <div style="border-radius: 0 40px 0 0;" class="modal-content">
+                <div style="background: #244f5f; color:white; text-align: center; border-radius: 0 40px 0 0;" class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 style="font-weight: bold;" class="modal-title">Estación Meteorológica</h4>
+                </div>
+                <div class="modal-body" style="text-align: justify">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <p>
+                                <font style="font-size: 14px; font-weight: bolder; color: #246578;" size="14px">PRESIÓN ATMOSFÉRICA:</font> Es la fuerza que ejerce el aire atmosférico sobre la superficie terrestre, es decir el aire que nos rodea pesa y ejerce una fuerza sobre todos los cuerpos gracias a la acción de la gravedad.
+                                La presión atmosférica depende de la altitud, cuanto mayor sea la altitud de la superficie terrestre respecto al nivel del mar, menor es la presión del aire.
+                            </p>
+                            <p>
+                                <a href="https://score.net.co/documents/20142/43325/tabla1.png/946a3cd4-5e49-1163-da1d-464fcb72ab42?t=1557761440455" target="_blank">
+                                    <font style="font-size: 14px; font-weight: bolder; color: #246578;" size="14px">TABLA: ALTURA VS PRESIÓN ATMOSFÉRICA</font>
+                                </a>
+                            </p>
+                            <p>
+                                <font style="font-size: 14px; font-weight: bolder; color: #246578;" size="14px">HUMEDAD RELATIVA:</font> La humedad relativa es la cantidad de humedad en el aire comparada con la que este puede mantenerse a esa temperatura. Cuando el aire no puede mantener toda la humedad, se condensará en gotas de
+                                agua, será frecuente que se desarrollen nubes, se forme niebla e incluso haya precipitación.
+                            </p>
+                            <p>
+                                <font style="font-size: 14px; font-weight: bolder; color: #246578;" size="14px">TEMPERATURA AMBIENTE:</font> Describe el estado de la atmósfera y está relacionada con la rapidez del movimiento de las partículas que constituyen la materia, cuando se da una mayor agitación, será mayor la temperatura.
+                            </p>
+                            <font style="font-size: 14px; font-weight: bolder; color: #246578;" size="14px">ILUMINACIÓN:</font> Flujo luminoso que incide sobre una superficie.
+                            <table class="table table-striped" style="width:100%; border-color: #69c1ac!important;" border="1">
+                                <tbody>
+                                    <p style="text-align: center;font-size: 14px; font-weight: bolder; color: #246578;" size="14px">TABLA ILUMINACIÓN</p>
+                                    <tr>
+                                        <td style="text-align: center; background: #5d7b79; color: #fff; font-weight: bolder">RANGO</td>
+                                        <td style="text-align: center; background: #5d7b79; color: #fff; font-weight: bolder">ESPECIFICACIÓN</td>
+                                    </tr>
+                                    <tr>
+                                        <td>0 - 107 Lux</td>
+                                        <td>Noche Nublado</td>
+                                    </tr>
+                                    <tr>
+                                        <td>108 - 1075 Lux</td>
+                                        <td>Día Oscuro</td>
+                                    </tr>
+                                    <tr>
+                                        <td>1076 - 30.752 Lux</td>
+                                        <td>Día Nublado Prueba</td>
+                                    </tr>
+                                    <tr>
+                                        <td>30.753 - 90.752 Lux</td>
+                                        <td>Soleado con Nubosidad</td>
+                                    </tr>
+                                    <tr>
+                                        <td>90.753 - 107.527 Lux</td>
+                                        <td>Soleado Despejado</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <font style="font-size: 14px; font-weight: bolder; color: #246578;" size="14px">ÍNDICE UV:</font> Es una medida que Indica la intensidad de la radiación ultravioleta en la superficie terrestre, se expresa como un valor superior a cero y cuanto más alto sea el índice tendrá efectos nocivos en la piel humana.
+                            Esta intensidad depende de varios factores como la altura del sol y la nubosidad.
+                            <table class="table table-striped" style="width:100%; border-color: #69c1ac!important;" border="1">
+                                <tbody>
+                                    <p style="text-align: center;font-size: 14px; font-weight: bolder; color: #246578;" size="14px">TABLA ÍNDICE UV</p>
+                                    <tr>
+                                        <td style="text-align: center; background: #5d7b79; color: #fff; font-weight: bolder">CATEGORÍA DE EXPOSICIÓN</td>
+                                        <td style="text-align: center; background: #5d7b79; color: #fff; font-weight: bolder">INTERVALO DE VALOR DEL IUV</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Baja</td>
+                                        <td>0 - 2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Moderada</td>
+                                        <td>3 - 5</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Alta</td>
+                                        <td>6 - 7</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Extremadamente alta</td>
+                                        <td>11+</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p>
+                                <font style="font-size: 14px; font-weight: bolder; color: #246578;" size="14px">VIENTO:</font> Es el movimiento de aire desde una zona hasta otra, se origina por diferencias de presión o de temperatura entre ambos extremos generando diferentes velocidades y direcciones del viento.
+                            </p>
+                        </div>
+                        <div class="col-sm-6 card sticky-top">
+                            <div style="text-align: center"><img class="position-fixed imgancho" style="width: 100%;" src="../static/imagenes/spad2m.png" /> </div>
+                            <br>
+                            <p>
+                                <font style="font-size: 14px; font-weight: bolder; color: #246578;" size="14px">VELOCIDAD DE VIENTO:</font> Para observar la intensidad del viento con respecto a la velocidad, se utiliza la escala de Beaufort.
+                            </p>
+                            <p>
+                                <a href="https://score.net.co/documents/20142/43325/tabla2.png/0657ffcb-a56d-7821-5717-3f5d0732d528?t=1557761440614" target="_blank">
+                                    <font style="font-size: 14px; font-weight: bolder; color: #246578;" size="14px">TABLA: ESCALA DE BEAUFORT</font>
+                                </a>
+                            </p>
+
+                            <font style="font-size: 14px; font-weight: bolder; color: #246578;" size="14px">DIRECCIÓN DEL VIENTO:</font> Indica la procedencia geográfica del viento.
+                            <table class="table table-striped" style="width:100%; border-color: #69c1ac!important;" border="1">
+                                <tbody>
+                                    <p style="text-align: center;font-size: 14px; font-weight: bolder; color: #246578;" size="14px">TABLA DIRECCIÓN DEL VIENTO</p>
+                                    <tr>
+                                        <td style="text-align: center; background: #5d7b79; color: #fff; font-weight: bolder">PUNTO CARDINAL</td>
+                                        <td style="text-align: center; background: #5d7b79; color: #fff; font-weight: bolder">ABREVIACIÓN</td>
+                                        <td style="text-align: center; background: #5d7b79; color: #fff; font-weight: bolder">DIRECCIÓN</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Norte</td>
+                                        <td>N</td>
+                                        <td>0°</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Nordeste, Noreste</td>
+                                        <td>NE</td>
+                                        <td>45°</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Este</td>
+                                        <td>E</td>
+                                        <td>90°</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sudeste, Sureste</td>
+                                        <td>SE</td>
+                                        <td>135°</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sur</td>
+                                        <td>S</td>
+                                        <td>180°</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sudoeste, Sureste</td>
+                                        <td>SO, SW</td>
+                                        <td>225°</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Oeste</td>
+                                        <td>W</td>
+                                        <td>270°</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Noreste</td>
+                                        <td>NO, NW</td>
+                                        <td>315°</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal: Fin modal para las unidades meteorologicas -->
+
+    <!-- Modal: modal para las unidades lidar -->
+    <div class="modal fade" id="modallidar" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div style="border-radius: 0 40px 0 0;" class="modal-content">
+                <div style="background: #244f5f; color:white; text-align: center; border-radius: 0 40px 0 0;" class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 style="font-weight: bold;" class="modal-title">Estación Microlidar</h4>
+                </div>
+                <div class="modal-body" style="text-align: justify">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <p>
+                                <font style="font-size: 14px; font-weight: bolder; color: #246578;" size="14px">DISTANCIA:</font> Es la distancia medida por el instrumento electrónico que calcula la medida desde el microlidar hasta el punto en la parte baja de la montaña. Como tal, es una magnitud escalar, y, por lo tanto, es expresada
+                                en unidades de longitud.
+                            </p>
+                            <table class="table table-striped" style="width=100%; border-color: #69c1ac!important;" border="1">
+                                <tbody>
+                                    <p style="text-align: center;font-size: 14px; font-weight: bolder; color: #246578;" size="14px">TABLA UNIDADES DE LONGITUD</p>
+                                    <tr>
+                                        <td style="text-align: center; background: #5d7b79; color: #fff; font-weight: bolder">UNIDAD DE MEDIDA</td>
+                                        <td style="text-align: center; background: #5d7b79; color: #fff; font-weight: bolder">ABREVIACIÓN</td>
+                                        <td style="text-align: center; background: #5d7b79; color: #fff; font-weight: bolder">VALOR</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Kilómetro</td>
+                                        <td>Km</td>
+                                        <td>1000 m</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hectómetro</td>
+                                        <td>hm</td>
+                                        <td>100 m</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Decámetro</td>
+                                        <td>dam</td>
+                                        <td>10 m</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Metro</td>
+                                        <td>m</td>
+                                        <td>1 m</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Decímetro</td>
+                                        <td>dm</td>
+                                        <td>0.1 m</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Centímetro</td>
+                                        <td>cm</td>
+                                        <td>0.01 m</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Milímetro</td>
+                                        <td>mm</td>
+                                        <td>0.001 m</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-sm-6 card sticky-top">
+                            <div style="text-align: center"><img class="position-fixed imgancho" style="width: 100%;" src="../static/imagenes/spad4ml.png" /> </div>
+                            <br>
+                            <p>
+                                <font style="font-size: 14px; font-weight: bolder; color: #246578;" size="14px">VALOR INICIAL:</font> Al ajustar el instrumento, se ajusta el valor con la medida más baja de la magnitud a medir con un valor determinado.
+                            </p>
+                            <p>
+                                <font style="font-size: 14px; font-weight: bolder; color: #246578;" size="14px">VALOR DELTA:</font> Describe como la distancia tiene un cambio con respecto al valor de la distancia inicial y el valor de la distancia medida.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal: Fin modal para las unidades lidar -->
+
+    <!-- Modal: modal para las unidades de deslizamientos -->
+    <div class="modal fade" id="modalDeslizamiento" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div style="border-radius: 0 40px 0 0;" class="modal-content">
+                <div style="background: #244f5f; color:white; text-align: center; border-radius: 0 40px 0 0;" class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 style="font-weight: bold;" class="modal-title">Unidad deslizamientos</h4>
+                </div>
+                <div class="modal-body" style="text-align: justify">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <p>
+                                <font style="font-size: 14px; font-weight: bolder; color: #246578;" size="14px">PRESIÓN DE POROS:</font> El suelo tiene partículas que se adhieren entre sí generando resistencia, cuando se da una precipitación se infiltra el agua, incrementando la presión de poros (saturación del terreno) disminuyendo
+                                la resistencia del suelo, generando una inestabilidad del talud y posible falla a lo largo de una superficie.
+                            </p>
+                            <p>
+                                <font style="font-size: 14px; font-weight: bolder; color: #246578;" size="14px">Presión de poros Inferior:</font> Es la saturación de agua que se da en el suelo a una mayor profundidad, Los datos se actualizan cada minuto.
+                            </p>
+                            <p>
+                                <font style="font-size: 14px; font-weight: bolder; color: #246578;" size="14px">Presión de poros Superior:</font> Es la saturación promedio de agua que se da en el suelo a una profundidad superficial, Los datos se actualizan cada minuto.
+                            </p>
+                            <p>
+                                <font style="font-size: 14px; font-weight: bolder; color: #246578;" size="14px">Temperatura del suelo:</font> informa las variaciones de temperatura que presenta el suelo. Los datos se actualizan cada minuto
+                            </p>
+                            <p>
+                                <font style="font-size: 14px; font-weight: bolder; color: #246578;" size="14px">Rango presión de poros:</font> 0 Extremadamente Mojado - 600 extremadamente seco
+                            </p>
+                        </div>
+                        <div class="col-sm-6 card sticky-top">
+                            <div style="text-align: center"><img class="position-fixed imgancho" style="width: 100%;" src="../static/imagenes/spad3d.png" /> </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal: Fin modal para las unidades de deslizamientos -->
+
+    <!-- Modal: modal para las unidades de inundaciones -->
+    <div class="modal fade" id="modalInundacion" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div style="border-radius: 0 40px 0 0;" class="modal-content">
+                <div style="background: #244f5f; color:white; text-align: center; border-radius: 0 40px 0 0;" class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 style="font-weight: bold;" class="modal-title">Unidad inundaciones</h4>
+                </div>
+                <div class="modal-body" style="text-align: justify">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <p>
+                                <font style="font-size: 14px; font-weight: bolder; color: #246578;" size="14px">DISTANCIA O NIVEL DE AGUA:</font> Es la distancia del sensor hacia la lámina de agua, esta se relaciona con los datos proporcionados por la Alcaldía, para definir el nivel máximo permitido que tiene el cuerpo de agua, esta
+                                información se actualiza cada minuto.<br><strong>Rango:</strong> 30 cm a 10 m
+                            </p>
+                        </div>
+                        <div class="col-sm-6 card sticky-top">
+                            <div style="text-align: center"><img class="position-fixed imgancho" style="width: 100%;" src="../static/imagenes/spad1i.png" /> </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal: Fin modal para las unidades de inundaciones -->
+
+
+    <!--nuevo menu responsive-->
+    <nav class="btnx" style="margin-top: 8%;">
+        <div class="button" style="z-index: 1052;">
+          <a data-toggle="modal" class="btn-open gradient-text" href="#menu3"></a>
+        </div>
+      </nav>
+        <!-- Modal: modal responsive -->
+        <div style="background: transparent" class="modal fade" id="menu3" tabindex="-1" role="dialog" >
+            <div class="modal-dialog menuresponsive" style="background: transparent; height: 100%;" role="document">
+                <div style="border-radius: 0 40px 0 0; background: linear-gradient(271deg, #244f5fa6, #000000c9); height: 100%;" class="modal-content">
+                    <div style="background: #244f5f; color:white; text-align: center; border-radius: 0 40px 0 0;" class="modal-header">
+                        
+                        <h4 style="font-weight: bold;" class="modal-title">Menu</h4>
+                    </div>
+                    <div class="modal-body" style="text-align: justify">
+                        <div class="row" style="padding: 13px;">
+                            <div class="col-xs-4 col-sm-4" style="background: url(../static/imagenes/fondomenu.png) no-repeat; background-size: cover; text-align: center;width: 31.333333%; margin: 1%;">
+                                <div id="boton_play" onclick="boton_deslizar()" data-toggle="modal" href="#menu3"  class="fa fa-play-circle" style="margin-left: -10px; font-size: 50px; color: #fff; margin: 15% 0;"></div>
+                                <p>
+                                    <font style="font-size: 14px; font-weight: bolder; color: #ffffff;" size="12px">RECORRIDO</font> 
+                                    
+                                </p>
+                            </div>
+                        <div class="col-xs-4 col-sm-4" style="background: url(../static/imagenes/fondomenu.png) no-repeat; background-size: cover; text-align: center;width: 31.333333%; margin: 1%;">
+                            <div id="boton_buscar" onclick="boton_buscar()" data-toggle="modal" href="#menu3"  class="fa fa-search" style="margin-left: -10px; font-size: 50px; color: #fff; margin: 15% 0;"></div>
+                                <p>
+                                    <font style="font-size: 14px; font-weight: bolder; color: #ffffff;" size="12px">BUSCAR</font> 
+                                    
+                                </p>
+                        </div>
+                        <div class="col-xs-4 col-sm-4" style="background: url(../static/imagenes/fondomenu.png) no-repeat; background-size: cover; text-align: center;width: 31.333333%; margin: 1%;">
+                            <div id="boton_estadisticas" onclick="boton_estadisticas()" data-toggle="modal" href="#menu3"  class="fa fa-line-chart" style="margin-left: -10px; font-size: 50px; color: #fff; margin: 15% 0;"></div>
+                            <p id="texto_estadisticas">
+                                <font style="font-size: 14px; font-weight: bolder; color: #ffffff;" size="12px">ESTADISTICA</font> 
+                                
+                            </p>
+                    </div>
+    
+                    <div class="col-xs-4 col-sm-4" style="background: url(../static/imagenes/fondomenu.png) no-repeat; background-size: cover; text-align: center;width: 31.333333%; margin: 1%;">
+                        <div id="boton_bpm" onclick="boton_bpm()" data-toggle="modal" href="#menu3"  class="fa fa-sitemap" style="margin-left: -10px; font-size: 50px; color: #fff; margin: 15% 0;"></div>
+                        <p>
+                            <font style="font-size: 14px; font-weight: bolder; color: #ffffff;" size="12px">BPM</font> 
+                            
+                        </p>
+                    </div>
+                <div class="col-xs-4 col-sm-4" style="background: url(../static/imagenes/fondomenu.png) no-repeat; background-size: cover; text-align: center;width: 31.333333%; margin: 1%;">
+                        <div id="boton_salir" onclick="boton_salir()" class="fa fa-power-off" style="margin-left: -10px; font-size: 50px; color: #fff; margin: 15% 0;"></div>
+                        <p>
+                            <font style="font-size: 14px; font-weight: bolder; color: #ffffff;" size="12px">SALIR</font> 
+                            
+                        </p>
+                </div>
+                <div class="col-xs-12 col-sm-12" style="padding: 0px; margin-top: 10%">
+                    <div style="background: transparent!important;" class="panel panel-default">
+                        <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse20" style="background:linear-gradient(to right,  #244847ba, #34b092b8);color:#fff;">
+                            <h4 class="panel-title">
+                            <img id="principal" style="margin-right: 21px;" src="../static/imagenes/menu/img/alerta0.png"><a class="hide-panel pull-right"><i class="glyphicon glyphicon-menu-down"></i></a>
+                            ALERTAS
+                        </h4>
+                        </div>  
+                        <div style="background:#171624; padding: 20px 0;" id="collapse20" class="panel-collapse collapse ">
+                            <!--busqueda unidades-->
+                            <div id="botones_responsive" data-toggle="modal" href="#menu3"></div>
+    
+    
+                        </div>
+                    </div>
+    
+                </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <!--<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal: Fin modal responsive-->
+
+
+    <!--fin menu responsive-->
+    <div id="mainWindow" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline'">
+        <div id="header" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'top'" style="overflow-y:hidden;overflow-x:hidden;width:auto;border:none;background:#80000000">
+            <div class="row">
+                <div style="float: left; position: relative;" class="col-xs-6 col-sm-2">
+                    <img class="logo" style="margin-top: 18px;" src="../static/imagenes/logo.png">
+                </div>
+                
+               <!-- <div style="padding-top: 8px;margin-left:10px;" class="col-sm-5ths col-md-5ths col-lg-5ths">
+                    <div class="panel panel-default" style=" background-color: transparent!important; border-radius: 0 0 0 30px;">
+                        <div class="panel-heading tituloscaja" style="background:#373d45;text-align:center;color:#fff; border-bottom: solid 4px #2a8d88!important; border-right: solid 4px #2a8d88!important;">
+                            <i class="glyphicon glyphicon-question-sign" style="float: left;" rel="tooltip" data-placement="bottom" id="Meteotooltip"></i>
+                            <p class="tituloscaja" style="margin: 0px;" id="cajaGeneral"></p>
+                        </div>
+                        <div class="panel-body" style="height:111px;background-image: url(../static/imagenes/sombra.png)!important; background-repeat: repeat-x!important; color:#000; border-radius: 0 0 0 30px; background: #264f5f;">
+                            <center style="position:absolute;margin:auto;top:64%;width:79%;z-index:100;left:50%;transform: translate(-50%, -50%);display:none;">
+                                <div class="alert alert-danger parpadea text" role="alert" style="padding:9px;margin:0px auto;position:relative;width: 90%;  color:#fff;background-color:#981919ad;border-color:#ebccd1;" id="alerta">
+                                    <center><span class=" glyphicon glyphicon-alert"></span></center>
+                                </div>
+                            </center>
+                            <div id="cajaMeteorologicas" class="row" style="margin-top: -14px; border-radius: 0px 15px 0px 0px;">
+                                <div id="brujula" class="col-sm-5 col-xs-6" style="border-right: solid 5px; height: 113px;padding-top: 6px; border-radius: 0 0 0 30px; padding-left: 3%;">
+                                    <canvas id="canvasDireccion" style="float: left;" width="100" height="100">
+                                                                        </canvas>
+                                    comentario<div id="brujula1" style="float: left; width: 200px; height: 100px; position: absolute; margin-left: -18%;"></div>->
+                                    <h6 class="texth6" style="line-height: 0.3;margin-left: 130px;margin-top: 34px;font-weight: bolder;color: #70a0ce;">Dirección del viento:</h6>
+                                    <h3 id="direccionVientoText" style="line-height: 0.3;margin-left: 130px;font-weight: bolder;color: #68b9a6;"></h3>
+                                    <h6 class="texth6" style="line-height: 0.3;margin-left: 130px; color: #68b9a6;">Del municipio</h6>
+                                
+                                </div>
+                                <div id="luminosidad_general" class="col-sm-4 col-xs-6" style="border-right: solid 5px; padding-top: 13px; padding-left: 2%; height: 112px; ">
+                                    <img id="clima_state" style="float: left; margin-top: 21px;" width="auto" height="52px;" src="" />
+                                    <h6 style="line-height: 0.3;margin-top: 27px;font-weight: bolder;color: #70a0ce;margin-left: 111px;">Luminosidad:</h6>
+                                    <p style="color: #68b9a6;color: #68b9a6;margin-left: 111px;line-height: 0.8;margin-left: 109px;font-weight: bolder;font-size: 24px;" id="titulo_luminosidad1"><strong></strong></p>
+                                    <h6 id="titulo_luminosidad2" style="margin-top: -8px;margin-left: 111px; color: #68b9a6;"></h6>
+                                </div>
+                               comentario <div id="termometro" class="col-sm-3" style="background: #264f5f;height: 113px;padding-top: 6px;padding-right: 2%;">->
+                                    <canvas id="canvasTermometro" style="float: left;" width="60" height="110">
+                                                                        </canvas>
+                                    <h6 class="texth6" style="line-height: 0.3;margin-top: 40px;font-weight: bolder;color: #70a0ce;">Temperatura:</h6>
+                                    <p id="valor_temperatura" style="color: #68b9a6;margin-left: 51px;line-height: 0.8;font-weight: bolder;font-size: 22px;"><strong></strong></p>
+                                    comentario <p id="valor_temperatura" style="float: right;margin-top: -63px;color: #68b9a6;margin-left: 51px;line-height: 0.8;font-weight: bolder;font-size: 22px;"><strong></strong></p>->
+                                </div>
+                            </div>
+                        </div>
+                    </div>-->
+
+
+
+<!--nueva tira
+                    <ul id="draggablePanelList" class="list-unstyled">
+                        <div style="padding-top: 8px;  padding-left: 0px; padding-right: 0px; float: left;" class="col-sm-2 azul">
+                            <div class="panel panel-default" style="border: 0px #bdccd4 solid; background: #373d45;">
+                                <div class="panel-heading" style="border-bottom: solid 4px #2a8d88!important;border-right: solid 4px #2a8d88!important;background:#373d45;text-align:left;;color:#fff;">
+                                    <i class="glyphicon glyphicon-question-sign" style="float: left;" data-placement="bottom" rel="tooltip" id="Caja1Tooltip"></i>
+                                    <p class="tituloscaja" style="margin: 0px; margin-left: 25px;" id="caja1"></p>
+                                    <div style="margin-top:-20px!important;" class="pull-right">
+                                        <button style="font-family: pruebitaflash; letter-spacing: 2px; color: #68b9a6;background-color: #373d45;border-color: #68b9a6;" id="valorCaja1" class="btn btn-default btn-xs btn-filter"></button>
+                                    </div>
+                                </div>
+                                <div class="panel-body" style="padding: 15px 0 0 2px; height:114px; background-image: url(../static/imagenes/fondovalor.png); background-repeat: repeat-x;">
+    
+                                    <center style="position:absolute;margin:auto;top:64%;width:79%;z-index:100;left:50%;transform: translate(-50%, -50%);display:none;">
+                                        <div class="alert alert-danger parpadea text" role="alert" style="padding:9px;margin:0px auto;position:relative;width: 90%;  color:#fff;background-color:#981919ad;border-color:#ebccd1;" id="alerta">
+                                            <center><span class=" glyphicon glyphicon-alert"></span></center>
+                                        </div>
+                                    </center>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div style="padding-top: 8px;  padding-left: 0px; padding-right: 0px; float: left;" class="col-sm-2 azul">
+                            <div class="panel panel-default" style="border: 0px #bdccd4 solid; background: #373d45;">
+                                <div class="panel-heading" style="border-bottom: solid 4px #2a8d88!important;background:#373d45;text-align:left; color:#fff;">
+                                    <i class="glyphicon glyphicon-question-sign" style="float: left;" rel="tooltip" data-placement="bottom" id="Caja3Tooltip"></i>
+                                    <p class="tituloscaja" style="margin: 0px; margin-left: 25px;" id="caja3"></p>
+                                </div>
+                                <div class="panel-body" style="height:114px; background-image: url(../static/imagenes/fondovalor.png); background-repeat: repeat-x; color:#000;">
+                                    <div class="pull-right" style="float:inherit!important; text-align: center">
+                                        <h1 id="valorCaja3" style="padding-top: 9px; font-family: pruebitaflash; color: #68b9a6;"></h1>
+                                    </div>                                    
+                                    <center id="alert-tiempo" style="position:absolute;margin:auto;top:64%;width:79%;z-index:100;left:50%;transform: translate(-50%, -50%);display:none;">
+                                        <div id="alerta-1" class="alert alert-danger parpadea text" role="alert" style="padding:9px;margin:0px auto;position:relative;width: 90%;color:#fff;background-color:#981919ad;border-color:#ebccd1;" id="alerta1">
+                                            <center><span class=" glyphicon glyphicon-alert"></span></center>
+                                        </div>
+                                    </center>
+                                    <center style="background:#80000000;"><canvas id="cvs" width="200" height="100" style="background:#80000000;width:100%; height: 91px;z-index:50;position:relative;margin:auto;">
+                                        </canvas></center>
+
+                                </div>
+
+
+
+                                
+                            </div>
+                        </div>
+                    </ul>
+
+fin nueva tira-->
+
+
+<!--<ul id="draggablePanelList" class="list-unstyled">-->
+<!--<ul id="draggablePanelList" class="list-unstyled">-->
+    <div class="row graficasvertical" style="width: 84%; float: right; margin-right: 0px;" id="draggablePanelList">
+                        <!--Inicio nuevas graficas-->
+                        <div style="padding-top: 8px;  padding-left: 0px; padding-right: 0px; float: left;" class="col-sm-2">
+                            <div class="panel panel-default" style="border: 0px #bdccd4 solid; background: #373d45; border-radius: 0 10%;">
+                                <div class="panel-heading" style="border-bottom: solid 4px #2a8d88!important; border-right: solid 4px #2a8d88!important;border-left: solid 4px #2a8d88!important; background:#373d45;text-align:left; color:#fff;">
+                                    <i class="glyphicon glyphicon-question-sign" style="float: left;" rel="tooltip" data-placement="bottom" id="Caja1Tooltip"></i>
+                                    <p class="tituloscaja" style="margin: 0px; margin-left: 25px;" id="caja1"></p>
+                                </div>
+                                <div class="panel-body fondograficasres" style="border-radius: 0 10%;">
+                                    <!--revisar texto que baja la grafica <div class="pull-right" style="float:inherit!important; text-align: center">
+                                        <h1 id="valorCaja1" style="padding-top: 9px; font-family: pruebitaflash; color: #68b9a6;"></h1>
+                                    </div> -->                                   
+                                    <div id="grafica1">
+                                                                    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding-top: 8px;  padding-left: 0px; padding-right: 0px; float: left;" class="col-sm-2">
+                            <div class="panel panel-default" style="border: 0px #bdccd4 solid; background: #373d45;">
+                                <div class="panel-heading" style="border-bottom: solid 4px #2a8d88!important; border-right: solid 4px #2a8d88!important;border-left: solid 4px #2a8d88!important; background:#373d45;text-align:left; color:#fff;">
+                                    <i class="glyphicon glyphicon-question-sign" style="float: left;" rel="tooltip" data-placement="bottom" id="Caja2Tooltip"></i>
+                                    <p class="tituloscaja" style="margin: 0px; margin-left: 25px;" id="caja2"></p>
+                                </div>
+                                <div class="panel-body fondograficasres">
+                                    <div id="grafica2">
+                                    <!--<div id="zona">
+                                  
+                                        <img  style="height: auto; width: 38%; float: left; margin-top: 16%;" src="../static/imagenes/antioquia.png">
+                                        
+                                        <p style="color:#fff; margin-left: 43%; margin-top: 50px; position: absolute;">ANTIOQUIA</p>
+                                        
+                                    </div> -->
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding-top: 8px; padding-left: 0px; padding-right: 0px; float: left;" class="col-sm-2">
+                            <div class="panel panel-default" style="border: 0px #bdccd4 solid; background: #373d45;">
+                                <div class="panel-heading" style="border-bottom: solid 4px #2a8d88!important;border-right: solid 4px #2a8d88!important;border-left: solid 4px #2a8d88!important;background:#373d45;text-align:left;;color:#fff;">
+                                    <i class="glyphicon glyphicon-question-sign" style="float: left;" rel="tooltip" data-placement="bottom" id="Caja3Tooltip"></i>
+                                    <p class="tituloscaja" style="margin: 0px; margin-left: 25px;" id="caja3"></p>
+                                </div>
+                                <div class="panel-body fondograficasres">
+                                    <!--revisar texto que baja la grafica <div class="pull-right" style="float:inherit!important; text-align: center">
+                                        <h1 id="valorCaja1" style="padding-top: 9px; font-family: pruebitaflash; color: #68b9a6;"></h1>
+                                    </div> -->                                   
+                                    <div id="grafica3">
+                            
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--fin nuevas graficas-->        
+            <div style="padding-top: 8px;  padding-left: 0px; padding-right: 0px; float: left;" class="col-sm-2">
+            <div class="panel panel-default" style="border: 0px #bdccd4 solid; background: #373d45;">
+                <div class="panel-heading" style="border-bottom: solid 4px #2a8d88!important; border-right: solid 4px #2a8d88!important;border-left: solid 4px #2a8d88!important; background:#373d45;text-align:left; color:#fff;">
+                    <i class="glyphicon glyphicon-question-sign" style="float: left;" rel="tooltip" data-placement="bottom" id="Caja4Tooltip"></i>
+                    <p class="tituloscaja" style="margin: 0px; margin-left: 25px;" id="caja4"></p>
+                </div>
+                <div class="panel-body fondograficasres">
+                    <div class="pull-right" style="float:inherit!important; text-align: center">
+                        <h1 id="valorCaja4" style="padding-top: 9px; font-family: pruebitaflash; color: #68b9a6;"></h1>
+                    </div>                                    
+                    <center id="alert-tiempo" style="position:absolute;margin:auto;top:64%;width:79%;z-index:100;left:50%;transform: translate(-50%, -50%);display:none;">
+                        <div id="alerta-1" class="alert alert-danger parpadea text" role="alert" style="padding:9px;margin:0px auto;position:relative;width: 90%;color:#fff;background-color:#981919ad;border-color:#ebccd1;" id="alerta1">
+                            <center><span class=" glyphicon glyphicon-alert"></span></center>
+                        </div>
+                    </center>
+                    <center style="background:#80000000;"><canvas id="cvs" width="200" height="100" style="background:#80000000;width:100%; height: 91px;z-index:50;position:relative;margin:auto;">
+                        </canvas></center>
+                </div>
+            </div>
+        </div>
+        <div style="padding-top: 8px;  padding-left: 0px; padding-right: 0px; float: left;" class="col-sm-2">
+            <div class="panel panel-default" style="border: 0px #bdccd4 solid; background: #373d45;">
+                <div class="panel-heading" style="border-bottom: solid 4px #2a8d88!important; border-right: solid 4px #2a8d88!important;border-left: solid 4px #2a8d88!important; background:#373d45;text-align:left; color:#fff;">
+                    <i class="glyphicon glyphicon-question-sign" style="float: left;" rel="tooltip" data-placement="bottom" id="Caja5Tooltip"></i>
+                    <p class="tituloscaja" style="margin: 0px; margin-left: 25px;" id="caja5"></p>
+                </div>
+                <div class="panel-body fondograficasres">
+                    <div class="pull-right" style="float:inherit!important; text-align: center">
+                        <h1 id="valorCaja5" style="padding-top: 9px; font-family: pruebitaflash; color: #68b9a6;"></h1>
+                    </div>                                    
+                    <center id="alert-tiempo" style="position:absolute;margin:auto;top:64%;width:79%;z-index:100;left:50%;transform: translate(-50%, -50%);display:none;">
+                        <div id="alerta-1" class="alert alert-danger parpadea text" role="alert" style="padding:9px;margin:0px auto;position:relative;width: 90%;color:#fff;background-color:#981919ad;border-color:#ebccd1;" id="alerta1">
+                            <center><span class=" glyphicon glyphicon-alert"></span></center>
+                        </div>
+                    </center>
+                    <center style="background:#80000000;"><canvas id="cvs" width="200" height="100" style="background:#80000000;width:100%; height: 91px;z-index:50;position:relative;margin:auto;">
+                        </canvas></center>
+                </div>
+            </div>
+        </div>
+        <div style="padding-top: 8px; padding-left: 0px; padding-right: 0px; float: left;" class="col-sm-2">
+            <div class="panel panel-default" style="border: 0px #bdccd4 solid; background: #373d45;">
+                <div class="panel-heading" style="border-bottom: solid 4px #2a8d88!important;border-right: solid 4px #2a8d88!important;border-left: solid 4px #2a8d88!important;background:#373d45;text-align:left;;color:#fff;">
+                    <i class="glyphicon glyphicon-question-sign" style="float: left;" rel="tooltip" data-placement="bottom" id="Caja6Tooltip"></i>
+                    <p class="tituloscaja" style="margin: 0px; margin-left: 25px;" id="caja6"></p>
+                </div>
+                <div class="panel-body fondograficasres">
+                    <div class="pull-right" style="float:inherit!important; text-align: center">
+                        <h1 id="valorCaja6" style="padding-top: 9px; font-family: pruebitaflash; color: #68b9a6;"></h1>
+                    </div>
+                    <center id="alert-velocidad" style="position:absolute;margin:auto;top:64%;width:79%;z-index:100;left:50%;transform: translate(-50%, -50%);display:none;">
+                        <div id="alerta-2" class="alert alert-danger parpadea text" role="alert" style="padding:9px;margin:0px auto;position:relative;width: 90%;color:#fff;background-color:#981919ad;border-color:#ebccd1;" id="alerta2">
+                            <center><span class=" glyphicon glyphicon-alert"></span></center>
+                        </div>
+                    </center>
+                    <center style="background:#80000000;"><canvas id="cvs1" width="200" height="100" style="background:#80000000;width:100%; height: 91px;z-index:50;position:relative;margin:auto;">
+                        </canvas></center>
+                </div>
+            </div>
+        </div>
+    </div>
+                </div>
+            </div>
+                    <!--Inicio barra lateral-->
+        <div id="wrapper" class="">
+            <div id="sidebar-wrapper" class="sidebar-color">
+                <div class="col-sm-12" id="rightPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'right'" style="border:none;background:#80000000; margin-top: -15px; width: 100%!important;">
+                    <!--cambio de tamaño  overflow-x:hidden; margin-top: -15px;height:728px; width: auto!important;-->
+                    <div style="margin-left: 1px; height: 100%; margin-right: -9%" class="row">
+                        <div class="col-sm-1 col-lg-1 col-md-1" style="margin-right: -1%;">
+                            <img style="height: 40px; width: auto; margin-left: -26px;" src="../static/imagenes/figura.png">
+                        </div>
+                        <div class="col-sm-10 col-lg-10 col-md-10" style="padding: 0px; margin-top: 15px; border-spacing: 5px; height: 100%;">
+                            <ul style="background: #363d44 ;" class="nav nav-tabs">
+                                <li style="width: 40%; text-align: center;" class="panelleft active btnuni"><a data-toggle="tab" href="#menu1">Unidades</a></li>
+                                <!--<li style="width: 100%; text-align: center;" class="panelleft active"><a data-toggle="tab" href="#menu1">unidades</a></li>-->
+                                <li style="width: 40%; text-align: center;" class="panelleft btnuni"><a data-toggle="tab" href="#menu2">Procesos</a></li>
+                               <a style="border-radius: 50%;margin-top: 1%;position: absolute;margin-left: 3%;padding: 1px 7px;" id="menu-toggle1" class="btn btn-default btnx" href="#">x</a>
+                            </ul>
+                            <div class="tab-content" style="height: 100%;">
+                                <div id="menu1" style="height: 100%;" class="tab-pane fade in active">
+                                    <div class="panel panel-default" style="border: 1px #b5bcc7 solid; background: url(../static/imagenes/fondocaja.png) no-repeat center ; background-size: cover; height: 100%;">
+                                        <div class="panel-heading" style="background:#373d45;text-align:center;color:#fff;" id="tiempo_real">Datos en Tiempo Real / SCT-00102</div>
+                                        <div id="Barrio" style="height: 22px; color: white;background-image: url(../static/imagenes/sombra.png);text-align: center;background: #244f5f;"></div>
+                                        <div class="panel-body" style="height:100%; background-repeat: repeat-x;color:#000; padding:25px;">
+
+                                            <!-- datos en tiempo real!-->
+                                            <table class="table" id="mi_tabla">
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                            <!-- <button type="button" class="btn btn-primary" id="helpButtonModal" onclick="modalFunc()">Ayuda</button> -->
+                                            <button type="button" class="btn btn-primary col-sm-5" id="helpButtonModal" onclick="modalFunc()">Ayuda</button>
+                                            <button type="button" class="btn btn-primary col-sm-7" id="helpButtonModal" onclick="window.open('/historiales')">Informes</button>
+                                            <!--Graficas responsive-->
+                                            <div style="height: 100%; width: 100%;" class="listagraficas"> 
+                                            <div class="row listagraficas" style="float: right; margin-right: 0px;" id="draggablePanelList">
+                                                <!--Inicio nuevas graficas-->
+                                                <div style="padding-top: 8px;  padding-left: 0px; padding-right: 0px; float: left;" class="col-sm-2 col-xs-12">
+                                                    <div class="panel panel-default" style="border: 0px #bdccd4 solid; background: #373d45; border-radius: 0 10%;">
+                                                        <div class="panel-heading" style="border-bottom: solid 4px #2a8d88!important; border-right: solid 4px #2a8d88!important;border-left: solid 4px #2a8d88!important; background:#373d45;text-align:left; color:#fff;">
+                                                            <i class="glyphicon glyphicon-question-sign" style="float: left;" rel="tooltip" data-placement="bottom" id="Caja1Tooltip"></i>
+                                                            <p class="tituloscaja" style="margin: 0px; margin-left: 25px;" id="caja1_responsive"></p>
+                                                        </div>
+                                                        <div class="panel-body fondograficasres">
+                                                            <!--revisar texto que baja la grafica <div class="pull-right" style="float:inherit!important; text-align: center">
+                                                                <h1 id="valorCaja1" style="padding-top: 9px; font-family: pruebitaflash; color: #68b9a6;"></h1>
+                                                            </div> -->                                   
+                                                            <div id="grafica1_responsive" style="">
+                                                    
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div style="padding-top: 8px;  padding-left: 0px; padding-right: 0px; float: left;" class="col-sm-2 col-xs-12">
+                                                    <div class="panel panel-default" style="border: 0px #bdccd4 solid; background: #373d45;">
+                                                        <div class="panel-heading" style="border-bottom: solid 4px #2a8d88!important; border-right: solid 4px #2a8d88!important;border-left: solid 4px #2a8d88!important; background:#373d45;text-align:left; color:#fff;">
+                                                            <i class="glyphicon glyphicon-question-sign" style="float: left;" rel="tooltip" data-placement="bottom" id="Caja2Tooltip"></i>
+                                                            <p class="tituloscaja" style="margin: 0px; margin-left: 25px;" id="caja2_responsive"></p>
+                                                        </div>
+                                                        <div class="panel-bod fondograficasres">
+                                                            <div id="grafica2_responsive">
+                                                            <!--<div id="zona">
+                                                          
+                                                                <img  style="height: auto; width: 38%; float: left; margin-top: 16%;" src="../static/imagenes/antioquia.png">
+                                                                
+                                                                <p style="color:#fff; margin-left: 43%; margin-top: 50px; position: absolute;">ANTIOQUIA</p>
+                                                                
+                                                            </div> -->
+                                                        </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div style="padding-top: 8px; padding-left: 0px; padding-right: 0px; float: left;" class="col-sm-2 col-xs-12">
+                                                    <div class="panel panel-default" style="border: 0px #bdccd4 solid; background: #373d45;">
+                                                        <div class="panel-heading" style="border-bottom: solid 4px #2a8d88!important;border-right: solid 4px #2a8d88!important;border-left: solid 4px #2a8d88!important;background:#373d45;text-align:left;;color:#fff;">
+                                                            <i class="glyphicon glyphicon-question-sign" style="float: left;" rel="tooltip" data-placement="bottom" id="Caja3Tooltip"></i>
+                                                            <p class="tituloscaja" style="margin: 0px; margin-left: 25px;" id="caja3_responsive"></p>
+                                                        </div>
+                                                        <div class="panel-body fondograficasres">
+                                                            <!--revisar texto que baja la grafica <div class="pull-right" style="float:inherit!important; text-align: center">
+                                                                <h1 id="valorCaja1" style="padding-top: 9px; font-family: pruebitaflash; color: #68b9a6;"></h1>
+                                                            </div> -->                                   
+                                                            <div id="grafica3_responsive" style="">
+                                                    
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--fin nuevas graficas-->        
+                                                <div style="padding-top: 8px;  padding-left: 0px; padding-right: 0px; float: left;" class="col-sm-2 col-xs-12">
+                                                 <div class="panel panel-default" style="border: 0px #bdccd4 solid; background: #373d45;">
+                                                 <div class="panel-heading" style="border-bottom: solid 4px #2a8d88!important; border-right: solid 4px #2a8d88!important;border-left: solid 4px #2a8d88!important; background:#373d45;text-align:left; color:#fff;">
+                                                   <i class="glyphicon glyphicon-question-sign" style="float: left;" rel="tooltip" data-placement="bottom" id="Caja4Tooltip"></i>
+                                                  <p class="tituloscaja" style="margin: 0px; margin-left: 25px;" id="caja4_responsive"></p>
+                                                 </div>
+                                              <div class="panel-body fondograficasres">
+                                             <div class="pull-right" style="float:inherit!important; text-align: center">
+                                                <h1 id="valorCaja4_responsive" class="datoresponsive" style="padding-top: 9px; font-family: pruebitaflash; color: #68b9a6;"></h1>
+                                                 </div>                                    
+                                                  <center id="alert-tiempo" style="position:absolute;margin:auto;top:64%;width:79%;z-index:100;left:50%;transform: translate(-50%, -50%);display:none;">
+                                                <div id="alerta-1" class="alert alert-danger parpadea text" role="alert" style="padding:9px;margin:0px auto;position:relative;width: 90%;color:#fff;background-color:#981919ad;border-color:#ebccd1;" id="alerta1">
+                                                    <center><span class=" glyphicon glyphicon-alert"></span></center>
+                                                </div>
+                                                </center>
+                                                <center style="background:#80000000;"><canvas id="cvs" width="200" height="100" style="background:#80000000;width:100%; height: 91px;z-index:50;position:relative;margin:auto;">
+                                                    </canvas></center>
+                                                 </div>
+                                                </div>
+                                                  </div>
+                                    
+                               
+                               
+                               
+                                                <div style="padding-top: 8px;  padding-left: 0px; padding-right: 0px; float: left;" class="col-sm-2 col-xs-12">
+                                                    <div class="panel panel-default" style="border: 0px #bdccd4 solid; background: #373d45;">
+                                                    <div class="panel-heading" style="border-bottom: solid 4px #2a8d88!important; border-right: solid 4px #2a8d88!important;border-left: solid 4px #2a8d88!important; background:#373d45;text-align:left; color:#fff;">
+                                                        <i class="glyphicon glyphicon-question-sign" style="float: left;" rel="tooltip" data-placement="bottom" id="Caja5Tooltip"></i>
+                                                        <p class="tituloscaja" style="margin: 0px; margin-left: 25px;" id="caja5_responsive"></p>
+                                                    </div>
+                                                    <div class="panel-body fondograficasres">
+                                                    <div class="pull-right" style="float:inherit!important; text-align: center">
+                                                        <h1 id="valorCaja5_responsive" class="datoresponsive" style="padding-top: 9px; font-family: pruebitaflash; color: #68b9a6;"></h1>
+                                                    </div>                                    
+                                                    <center id="alert-tiempo" style="position:absolute;margin:auto;top:64%;width:79%;z-index:100;left:50%;transform: translate(-50%, -50%);display:none;">
+                                                        <div id="alerta-1" class="alert alert-danger parpadea text" role="alert" style="padding:9px;margin:0px auto;position:relative;width: 90%;color:#fff;background-color:#981919ad;border-color:#ebccd1;" id="alerta1">
+                                                            <center><span class=" glyphicon glyphicon-alert"></span></center>
+                                                        </div>
+                                                    </center>
+                                                    <center style="background:#80000000;"><canvas id="cvs" width="200" height="100" style="background:#80000000;width:100%; height: 91px;z-index:50;position:relative;margin:auto;">
+                                                        </canvas>
+                                                    </center>
+                                                    </div>
+                                                </div>
+                                                </div>
+                                
+                                                 <div style="padding-top: 8px; padding-left: 0px; padding-right: 0px; float: left;" class="col-sm-2 col-xs-12">
+                                                     <div class="panel panel-default" style="border: 0px #bdccd4 solid; background: #373d45;">
+                                                          <div class="panel-heading" style="border-bottom: solid 4px #2a8d88!important;border-right: solid 4px #2a8d88!important;border-left: solid 4px #2a8d88!important;background:#373d45;text-align:left;;color:#fff;">
+                                                                <i class="glyphicon glyphicon-question-sign" style="float: left;" rel="tooltip" data-placement="bottom" id="Caja6Tooltip"></i>
+                                                              <p class="tituloscaja" style="margin: 0px; margin-left: 25px;" id="caja6_responsive"></p>
+                                                          </div>
+                                                        <div class="panel-body fondograficasres">
+                                                              <div class="pull-right" style="float:inherit!important; text-align: center">
+                                                                  <h1 id="valorCaja6_responsive" class="datoresponsive" style="padding-top: 9px; font-family: pruebitaflash; color: #68b9a6;"></h1>
+                                                               </div>
+                                                               <center id="alert-velocidad" style="position:absolute;margin:auto;top:64%;width:79%;z-index:100;left:50%;transform: translate(-50%, -50%);display:none;">
+                                                                   <div id="alerta-2" class="alert alert-danger parpadea text" role="alert" style="padding:9px;margin:0px auto;position:relative;width: 90%;color:#fff;background-color:#981919ad;border-color:#ebccd1;" id="alerta2">
+                                                                      <center><span class=" glyphicon glyphicon-alert"></span></center>
+                                                                  </div>
+                                                            </center>
+                                                            <center style="background:#80000000;"><canvas id="cvs1" width="200" height="100" style="background:#80000000;width:100%; height: 91px;z-index:50;position:relative;margin:auto;">
+                                                                  </canvas></center>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                        </div>
+                                     </div>                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="menu2" style="height: 100%;" class="tab-pane fade">
+                                    <div class="panel panel-default" style="border: 1px #b5bcc7 solid; background: url(../static/imagenes/fondocaja.png) no-repeat center ; background-size: cover; height: 100%;">
+                                        <div class="panel-heading" style="background:#373d45;text-align:center;color:#fff;" id="area_select">Procedimientos de Area / </div>
+                                        <div id="zona" style="height: 22px; color: white;background-image: url(../static/imagenes/sombra.png);text-align: center;background: #244f5f;">Seleccione Area</div>
+                                        <div class="panel-body" style="height:460px;background-image: url(../static/imagenes/sombra.png); background-repeat: repeat-x;color:#000; padding:25px;">
+                                            <div id="area"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!--modulo Documentacion / Reportes / Procedimientos 
+                        <div class="col-sm-1 col-lg-1 col-md-1" style="margin-right: -1%;">
+                        </div>
+                        <div class="col-sm-10 col-lg-10 col-md-10" style="padding: 0px;margin-top:20px;-moz-border-spacing:4px;border-spacing:5px">
+                            <div class="panel panel-default" style="border: 1px #b5bcc7 solid; background: url(../static/imagenes/fondocaja.png) no-repeat center ; background-size: cover;">
+                                <div class="panel-heading" style="background:#373d45;text-align:center;color:#fff;">Documentacion / Reportes / Procedimientos</div>
+                                <div class="panel-body" style="color:#000;overflow-x:hidden; padding-bottom: 100px;padding:25px;">
+                                    <div class="panel-group" id="accordion">
+                                        <div style="background: transparent!important;" class="panel panel-default">
+                                            <div class="panel-heading" id="procedimiento" data-toggle="collapse" data-parent="#accordion" href="#collapse1" style="background:linear-gradient(to right, #244847ba, #34b092b8);color:#fff;">
+                                                <h4 class="panel-title">
+                                                    Inicio Procedimiento BPM<a class="hide-panel pull-right"><i class="glyphicon glyphicon-menu-down"></i></a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapse1" class="panel-collapse collapse">
+                                                <div style="background:#80a09b;" class="panel-body">
+                                                    <center><button id="inicio_proceso_camunda" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-qrcode"></span>&nbsp;Iniciar Proceso</button></center>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="background: transparent!important;" class="panel panel-default">
+                                            <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse2" style="background:linear-gradient(to right, #244847ba, #34b092b8);color:#fff;">
+                                                <h4 class="panel-title">
+                                                    Exportar Datos<a class="hide-panel pull-right"><i class="glyphicon glyphicon-menu-down"></i></a>
+                                                </h4>
+                                            </div>
+                                            <div style="background:#80a09b;" id="collapse2" class="panel-collapse collapse ">
+                                                <div class="panel-body">
+                                                    <center>
+                                                        <div class="btn-group">
+                                                            <button onclick="exportTableToCSV('members.csv')" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-list-alt"></span>&nbsp;CSV</button>
+                                                            <button onclick="exportTableToExcel('mi_tabla','prueba_export_excel')" style="display: none;" type="button" class="btn btn-primary">
+                                                                <span class="glyphicon glyphicon-th-list"></span> excel
+                                                            </button>
+                                                            <button onclick="javascript:demoFromHTML();" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-file"></span>&nbsp;Reporte</button>
+                                                        </div>
+                                                    </center>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="display: none;background: transparent!important;" class="panel panel-default">
+                                            <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse3" style="background:linear-gradient(to right, #244847ba, #34b092b8);color:#fff;">
+                                                <h4 class="panel-title">
+                                                    Zonas de Riesgo<a class="hide-panel pull-right"><i class="glyphicon glyphicon-menu-down"></i></a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapse3" class="panel-collapse collapse">
+                                                <div style="background:#80a09b;" class="panel-body">
+                                                    <center>
+                                                        <div class="btn-group">
+                                                            <button onclick="abrir()" class="btn btn-primary">Diseñar zona de Afectacion</button>
+                                                        </div>
+                                                    </center>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>-->
+                    </div>
+                </div>
+            </div>
+            <!-- Page Content -->
+
+            <!--Inicio barra lateral2-->
+            <div id="sidebar2-wrapper" class="sidebar-color">
+                <div class="col-sm-12" id="rightPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'right'" style="border:none;background:#80000000; margin-top: -15px;height:728px; width: 100%!important; ">
+                    <div style="margin-left: 1px; height: 100%; margin-right: -9%" class="row">
+                        <div class="col-sm-1 col-lg-1 col-md-1" style="margin-right: -1%;">
+                            <img style="height: 40px; width: auto; margin-left: -26px;" src="../static/imagenes/figura.png">
+                        </div>
+
+                        <div class="col-sm-10" style="padding: 0px;margin-top:15px;-moz-border-spacing:4px;border-spacing:5px; height: 100%;">
+                            <div class="panel panel-default" style="border: 1px #b5bcc7 solid; background: url(../static/imagenes/fondocaja.png) no-repeat center; background-size: cover;">
+                                <div class="panel-heading" style="background:#373d45;text-align:center;color:#fff;"><p>Seleccione Alerta</p>  <a style="border-radius: 50%;margin-top: -10%;position: absolute;margin-left: 36%;padding: 1px 7px;" id="menu-toggle2" class="btn btn-default" href="#menu-toggle">x</a></div>
+                                <div class="panel-body" style="color:#000;overflow-x:hidden; padding-bottom: 100px;">
+                                    <div class="panel-group" id="accordion">
+                                        <div style="background: transparent!important;" class="panel panel-default">
+                                            <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse4" style="background:linear-gradient(to right, #244847ba, #34b092b8);color:#fff; padding: 15px 15px;">
+                                                <h4 class="panel-title">
+                                                    <p style="margin: 0px;" id="alertaRoja"></p><a style="margin-top: -6%;" class="hide-panel pull-right"><i class="glyphicon glyphicon-menu-down"></i></a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapse4" class="panel-collapse">
+                                                <!--Insertar alertas rojas-->
+                                                <div id="roja1" style="background:linear-gradient(to right, #151422, #ffffff00);" class="red">
+                                                    <center></center>
+                                                </div>
+                                                <div id="roja2" style="background:linear-gradient(to right, #151422, #ffffff00);" class="red">
+                                                    <center></center>
+                                                </div>
+                                                <div id="roja3" style="background:linear-gradient(to right, #151422, #ffffff00);" class="red">
+                                                    <center></center>
+                                                </div>
+                                                <div id="roja4" style="background:linear-gradient(to right, #151422, #ffffff00);" class="red">
+                                                    <center></center>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="background: transparent!important;" class="panel panel-default">
+                                            <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse5" style="background:linear-gradient(to right,  #244847ba, #34b092b8);color:#fff; padding: 17px 15px;">
+                                                <h4 class="panel-title">
+                                                    <p style="margin: 0px;" id="alertaNaranja"></p><a style="margin-top: -6%;" class="hide-panel pull-right"><i class="glyphicon glyphicon-menu-down"></i></a>
+                                                </h4>
+                                            </div>
+                                            <div style="background:#80a09b;" id="collapse5" class="panel-collapse">
+                                                <!--Insertar alertas naranja-->
+                                                <!--adicion de id para las alertas naranjas-->
+                                                <div id="naranja1" style="background:linear-gradient(to right, #151422, #ffffff00);" class="orange">
+                                                    <center></center>
+                                                </div>
+                                                <div id="naranja2" style="background:linear-gradient(to right, #151422, #ffffff00);" class="orange">
+                                                    <center></center>
+                                                </div>
+                                                <div id="naranja3" style="background:linear-gradient(to right, #151422, #ffffff00);" class="orange">
+                                                    <center></center>
+                                                </div>
+                                                <div id="naranja4" style="background:linear-gradient(to right, #151422, #ffffff00);" class="orange">
+                                                    <center></center>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="background: transparent!important;" class="panel panel-default">
+                                            <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse6" style="background:linear-gradient(to right,  #244847ba, #34b092b8);color:#fff; padding: 17px 15px;">
+                                                <h4 class="panel-title">
+                                                    <p style="margin: 0px;" id="alertaAmarilla"></p><a style="margin-top: -6%;" class="hide-panel pull-right"><i class="glyphicon glyphicon-menu-down"></i></a>
+                                                </h4>
+                                            </div>
+                                            <div style="background:#80a09b;" id="collapse6" class="panel-collapse">
+                                                <!--Insertar alertas naranja-->
+                                                <!--adicion de id para las alertas naranjas-->
+                                                <div id="amarilla1" style="background:linear-gradient(to right, #151422, #ffffff00);" class="orange">
+                                                    <center></center>
+                                                </div>
+                                                <div id="amarilla2" style="background:linear-gradient(to right, #151422, #ffffff00);" class="orange">
+                                                    <center></center>
+                                                </div>
+                                                <div id="amarilla3" style="background:linear-gradient(to right, #151422, #ffffff00);" class="orange">
+                                                    <center></center>
+                                                </div>
+                                                <div id="amarilla4" style="background:linear-gradient(to right, #151422, #ffffff00);" class="orange">
+                                                    <center></center>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="display: none;background: transparent!important;" class="panel panel-default">
+                                            <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse3" style="background:linear-gradient(to right, #244847ba, #34b092b8);color:#fff; padding: 17px 15px;">
+                                                <h4 class="panel-title">
+                                                    Zonas de Riesgo<a class="hide-panel pull-right"><i class="glyphicon glyphicon-menu-down"></i></a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapse3" class="panel-collapse collapse">
+                                                <div style="background:#80a09b;" class="panel-body">
+                                                    <center>
+                                                        <div class="btn-group">
+                                                            <button onclick="abrir()" class="btn btn-primary">Diseñar zona de Afectacion</button>
+                                                        </div>
+                                                    </center>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="padding: 23px!important; color: rgb(196, 195, 195); border: solid 1px; border-radius: 15px; background: #2d3235;" class="col-sm-12">
+                                        <p>El Reporte de Alertas es un informe automático, periódico, configurable que presenta alertas ....Una Alerta Meteorológica se emite cuando el servicio meteorológico, recibe suficiente información que indica alta
+                                            probabilidad de fuertes tormentas, granizo, nevadas, fuertes vientos bajo criterios de severas tormentas, temp......</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!--Inicio barra lateral3-->
+            <div id="sidebar3-wrapper" class="sidebar-color">
+                <div class="col-sm-12" id="rightPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'right'" style="border:none;background:#80000000; margin-top: -15px;height:728px; width: 100%!important; ">
+                    <div style="margin-left: 1px; height: 100%; margin-right: -9%;" class="row">
+                        <div class="col-sm-1 col-lg-1 col-md-1" style="margin-right: -1%;">
+                            <img style="height: 40px; width: auto; margin-left: -26px;" src="../static/imagenes/figura.png">
+                        </div>
+
+                        <div class="col-sm-10" style="padding: 0px;margin-top:15px;-moz-border-spacing:4px;border-spacing:5px; height: 100%;">
+                            <div class="panel panel-default" style="border: 1px #b5bcc7 solid; background: url(../static/imagenes/fondocaja.png) no-repeat center ; background-size: cover; height: 100%;">
+                                <div class="panel-heading" style="background:#373d45;text-align:center;color:#fff;"><p>Filtrar Busqueda</p> <a style="border-radius: 50%;margin-top: -10%;position: absolute;margin-left: 36%;padding: 1px 7px;" id="menu-toggle3" class="btn btn-default" href="#">x</a></div>
+                                <div class="panel-body" style="color:#000;overflow-x:none; height: 100%; padding-bottom: 125%;">
+                                    <div class="panel-group" id="accordion">
+                                        <div style="background: transparent!important;" class="panel panel-default">
+                                            <div class="panel-heading" id="procedimiento" data-toggle="collapse" data-parent="#accordion" href="#collapse8" aria-expanded="true" style="background:linear-gradient(to right, #244847ba, #34b092b8);color:#fff;">
+                                                <h4 id="change-me" class="panel-title">
+                                                    Tipo de Unidad<a class="hide-panel pull-right"><i class="glyphicon glyphicon-menu-down"></i></a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapse8" class="panel-collapse collapse" style="padding: 20px 0;">
+                                                <!--busqueda tipo de unidads-->
+
+                                                <button onclick="tipoUnidad('metereologica')" type="button" class="btn btn-primary buscar"><!--<div id="roja1"></div>-->METEOROLÓGICA</button>
+                                                <button onclick="tipoUnidad('deslizamiento')" type="button" class="btn btn-primary buscar"><!--<div id="roja1"></div>-->DESLIZAMIENTO</button>
+                                                <button onclick="tipoUnidad('lidar')" style="margin-top: 10px;" type="button" class="btn btn-primary buscar"> <!--<div id="roja1"></div>-->LIDAR</button>
+                                                <button onclick="tipoUnidad('incendio')" style="margin-top: 10px;" type="button" class="btn btn-primary buscar"> <!--<div id="roja1"></div>-->INCENDIO</button>
+                                                <div style="background:linear-gradient(to right, #151422, #ffffff00);">
+                                                    <center><button style="width: 100%;" id="inicio_proceso_camunda" type="button" class="btn-primary"><div id="roja4"></div></button></center>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="background: transparent!important;" class="panel panel-default">
+                                            <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse9" style="background:linear-gradient(to right,  #244847ba, #34b092b8);color:#fff;">
+                                                <h4 class="panel-title">
+                                                    Número de Unidad<a class="hide-panel pull-right"><i class="glyphicon glyphicon-menu-down"></i></a>
+                                                </h4>
+                                            </div>
+                                            <div style="background:#80a09b;" id="collapse9" class="panel-collapse collapse ">
+                                                <!--busqueda numero de unidad-->
+                                                <div style="background:linear-gradient(to right, #151422, #ffffff00);">
+                                                    <div class="form-group" style="margin-top: 10px;">
+                                                        <select style="background: #2d3235!important; color: #fff!important;" class="form-control" id="sel1" onchange="zonaUnidad(this.value)">
+                                                            <option id="sel1-1" value="">Seleccione una opción</option>
+
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="background: transparent!important;" class="panel panel-default">
+                                            <div class="panel-heading" id="procedimiento" data-toggle="collapse" data-parent="#accordion" href="#collapse11" style="background:linear-gradient(to right, #244847ba, #34b092b8);color:#fff;">
+                                                <h4 id="change-me" class="panel-title">
+                                                    Tipo de Unidad<a class="hide-panel pull-right"><i class="glyphicon glyphicon-menu-down"></i></a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapse11" class="panel-collapse collapse" style="padding: 20px 0;">
+                                                <!--busqueda tipo de unidads-->
+
+                                                <button onclick="tipoUnidad('metereologica')" type="button" class="btn btn-primary buscar"><!--<div id="roja1"></div>-->METEOROLÓGICA</button>
+                                                <button onclick="tipoUnidad('deslizamiento')" type="button" class="btn btn-primary buscar"><!--<div id="roja1"></div>-->DESLIZAMIENTO</button>
+                                                <button onclick="tipoUnidad('lidar')" style="margin-top: 10px;" type="button" class="btn btn-primary buscar"> <!--<div id="roja1"></div>-->LIDAR</button>
+                                                <div style="background:linear-gradient(to right, #151422, #ffffff00);">
+                                                    <center><button style="width: 100%;" id="inicio_proceso_camunda" type="button" class="btn-primary"><div id="roja4"></div></button></center>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="background: transparent!important;" class="panel panel-default">
+                                            <div class="panel-heading" data-toggle="collapse" data-parent="#accordion" href="#collapse10" style="background:linear-gradient(to right,  #244847ba, #34b092b8);color:#fff;">
+                                                <h4 class="panel-title">
+                                                    Unidades<a class="hide-panel pull-right"><i class="glyphicon glyphicon-menu-down"></i></a>
+                                                </h4>
+                                            </div>
+                                            <div style="background:#171624; padding: 20px 0;" id="collapse10" class="panel-collapse collapse ">
+                                                <!--busqueda unidades-->
+
+
+                                                <div style="background:linear-gradient(to right, #151422, #ffffff00);">
+                                                    <center><button style="width: 100%;" id="inicio_proceso_camunda" type="button" class="btn-primary"><!--<div id="roja1"></div>--></button></center>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!--Inicio de mapa-->
+            <div id="page-content-wrapper" style="margin-top:-15px;">
+                <div style="margin-left: 0px; padding-left: 0px;" class="container-fluid">
+                    <div class="row">
+                        <!--<div class="col-lg-12" style="overflow: hidden;top: 194px;left: 0px;z-index: 1;position: absolute;width: 100%;margin: 0;padding: 0;">
+                            cambiofabio barra-->
+                        <div class="col-lg-12" style="overflow: hidden;left: 0px;z-index: 1;position: absolute;width: 100%;margin: 0;padding: 0;">
+                            <div id="titulo_principal" class="panel-heading" style="background:#373d45;color:#fff;text-align:center; border-radius: 0px 40px 0px 0px;">Mapa de Ubicación de Unidades</div>
+                        </div>
+                        <div class="col-lg-12" style="margin-top: 31px; padding-right: 0;">
+                            <div style="top:190px!important;overflow-x:hidden;overflow-y:hidden; height: auto!important;" id="map2" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'">
+
+                                <!--Imagen indicadores-->
+                                <!--cambiofabio menu-indicadores-->
+                                <div style="width: 15%; height: auto; position: fixed; bottom: 0; margin-bottom:14px; margin-top: 12%; margin-left: 30px; background-size: cover; background-repeat: round; margin-left: 85%;">
+
+                                    <div id="indicadores1" style="padding: 10px 15px 16px 16px;">
+                                        <img id="imagenin" style="width: 100%; padding-right: 30px;; " src="../static/imagenes/indicadonesnuevo.png"></div>
+                                </div>
+                                <div style="width: 15%; height: auto; position: fixed; bottom: 0; margin-bottom:14px; margin-top: 12%; margin-left: 30px; background-size: cover; background-repeat: round;">
+
+                                    <div style="height: 0px; width: 0%;" class="menuContainer"></div>
+                                    <div style="height: 185px;">
+                                        <iframe id="E1" width="900" height="255" src="../static/imagenes/menu/menunscript.html" scrolling="no" frameborder="no"></iframe>
+                                        <script>
+                                            const menu_id= document.getElementById('E1');
+                                            menu_id.src="../static/imagenes/menu/menunscript.html?"+id_cliente;
+                                        </script>                                      
+                                    </div>
+                                </div>
+
+
+
+                                <!--<iframe src="index-qgis.html" id="E2" width="100%" height="900" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>-->
+                                <iframe src="index.html" id="E2" width="100%" height="900" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
+
+                                <script>
+                                    const mapa_id= document.getElementById('E2');
+                                    mapa_id.src="../static/imagenes/qgis/index.html?"+id_cliente;
+                                    window.addEventListener('message', function(e) {
+                                        var $iframe = $('#the-iframe');
+
+                                        var eventName = e.data[0];
+                                        var data = e.data[1];
+                                        if (eventName == 'var_close') {
+                                            console.log('cerrar')
+                                            e.preventDefault();
+                                            $("#wrapper").removeClass("toggled1");
+                                            $("#wrapper").addClass("toggled");
+                                        }
+                                        switch (eventName) {
+                                            case 'varName':
+                                                id_unidad_qgis = data
+                                                console.log('id-unidad: ', id_unidad_qgis);
+                                                e.preventDefault();
+                                                $("#wrapper").addClass("toggled1");
+                                                var humedad_value = "";
+                                                var humedad_medida = "";
+                                                var barrio;
+                                                var topic = id_unidad_qgis;
+                                                console.log(id_cliente);
+                                                if (id_cliente=='9007586290'){
+                                                    
+                                                $("#mi_tabla").empty();
+                                                var r = "";
+                                                var Unidad;
+                                                var Variables;
+                                                var tipoEvento;
+                                                var idTipoEvento;
+                                                var datoInicial;
+                                                var datoInicialDia;
+                                                for (i = 0; i < datos.length; i++) {
+                                                    Unidad = datos[i].id_unidad;
+                                                    Variables = datos[i].variables;
+                                                    tipoEvento = datos[i].tipo_evento;
+                                                    idTipoEvento = datos[i].nom_estacion;
+                                                    for (j = 0; j < Variables.length; j++) {
+                                                        if (Unidad == topic) {
+                                                            datoInicial = datos[i].dato_inicial;
+                                                            datoInicialDia = datos[i].dato_inicialDia;
+                                                            UMedidaf = Variables[j].unidad_medida;
+                                                            Variablef = Variables[j].variable;
+                                                            nombreSensor = Variables[j].nombre_sensor;
+                                                            RMayor = Variables[j].rango_mayor;
+                                                            if (idTipoEvento != "meteorologica") {
+                                                                if (idTipoEvento == "microlidar") {
+                                                                    datoInicialDia = datoInicialDia.toString();
+                                                                    $.ajax({
+                                                                        url: "https://auth.score.net.co:8243/consultas-unidades/1.0.0/estados?unidad="+Unidad,
+                                                                        type: 'GET',
+                                                                        dataType: 'json',
+                                                                        async: false,
+                                                                        success: function(respuesta) {
+                                                                            estados = respuesta
+                                                                            
+                                                                                //layer_areas_prueba_1.clearLayers();
+                                                                        }
+                                                                    })
+                                                                    var estado=estados[0].data;
+                                                                    
+                                                                    if (estado=='MANT' || estado=='OFFLINE'){
+                                                                        document.getElementById('grafica1').innerHTML = "<div> <p style='color:#68b9a6; position: absolute; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 38%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica1_responsive').innerHTML = "<div> <p style='color:#68b9a6; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 44%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica2').innerHTML = "<div> <p style='color:#68b9a6; position: absolute; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 38%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica2_responsive').innerHTML = "<div> <p style='color:#68b9a6; text-align: center; font-weight: bold;'><img  style='height: auto; width: 40%; margin-top: 10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica3').innerHTML = "<div> <p style='color:#68b9a6; position: absolute; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 38%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica3_responsive').innerHTML = "<div> <p style='color:#68b9a6; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 44%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('valorCaja4').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja4_responsive').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja5').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja5_responsive').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja6').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja6_responsive').innerHTML = "<p>Mantenimiento</p>";
+                                                                        $("#mi_tabla").empty();
+                                                                        $('#caja1').text("Mantenimiento");
+                                                                        $('#caja1_responsive').text("Mantenimiento");
+                                                                        $('#caja2').text("Mantenimiento");
+                                                                        $('#caja2_responsive').text("Mantenimiento");
+                                                                        $('#caja3').text("Mantenimiento");
+                                                                        $('#caja3_responsive').text("Mantenimiento");
+                                                                        $('#caja4').text("Mantenimiento");
+                                                                        $('#caja4_responsive').text("Mantenimiento");
+                                                                        $('#caja5').text("Mantenimiento");
+                                                                        $('#caja5_responsive').text("Mantenimiento");
+                                                                        $('#caja6').text("Mantenimiento");
+                                                                        $('#caja6_responsive').text("Mantenimiento");
+                                                                        
+                                                                    }
+                                                                    clienteUnidades(estado,Unidad,datoInicialDia);
+                                                                    clienteEventos(estado,tipoEvento, idTipoEvento, datoInicial, datoInicialDia);
+                                                                    console.log("Lidar", Unidad)
+                                                                    break;
+                                                                } else {
+                                                                    $.ajax({
+                                                                        url: "https://auth.score.net.co:8243/consultas-unidades/1.0.0/estados?unidad="+Unidad,
+                                                                        type: 'GET',
+                                                                        dataType: 'json',
+                                                                        async: false,
+                                                                        success: function(respuesta) {
+                                                                            estados = respuesta
+                                                                            
+                                                                                //layer_areas_prueba_1.clearLayers();
+                                                                        }
+                                                                    })
+                                                                    var estado=estados[0].data;
+                                                                    if (estado=='MANT' || estado=='OFFLINE'){
+                                                                        document.getElementById('grafica1').innerHTML = "<div> <p style='color:#68b9a6; position: absolute; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 38%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica1_responsive').innerHTML = "<div> <p style='color:#68b9a6; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 44%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica2').innerHTML = "<div> <p style='color:#68b9a6; position: absolute; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 38%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica2_responsive').innerHTML = "<div> <p style='color:#68b9a6; text-align: center; font-weight: bold;'><img  style='height: auto; width: 40%; margin-top: 10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica3').innerHTML = "<div> <p style='color:#68b9a6; position: absolute; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 38%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica3_responsive').innerHTML = "<div> <p style='color:#68b9a6; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 44%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('valorCaja4').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja4_responsive').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja5').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja5_responsive').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja6').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja6_responsive').innerHTML = "<p>Mantenimiento</p>";
+                                                                        $("#mi_tabla").empty();
+                                                                        $('#caja1').text("Mantenimiento");
+                                                                        $('#caja1_responsive').text("Mantenimiento");
+                                                                        $('#caja2').text("Mantenimiento");
+                                                                        $('#caja2_responsive').text("Mantenimiento");
+                                                                        $('#caja3').text("Mantenimiento");
+                                                                        $('#caja3_responsive').text("Mantenimiento");
+                                                                        $('#caja4').text("Mantenimiento");
+                                                                        $('#caja4_responsive').text("Mantenimiento");
+                                                                        $('#caja5').text("Mantenimiento");
+                                                                        $('#caja5_responsive').text("Mantenimiento");
+                                                                        $('#caja6').text("Mantenimiento");
+                                                                        $('#caja6_responsive').text("Mantenimiento");
+                                                                        
+                                                                    }
+                                                                    clienteUnidades(estado,Unidad);
+                                                                    clienteEventos(estado,tipoEvento, idTipoEvento);
+                                                                    console.log("Presion Poros", Unidad)
+                                                                    break;
+                                                                }
+                                                            } else {
+                                                                /*$("#imagenmontana").css("display", "none");
+                                                                $("#valorCaja1").css("display", "block");
+                                                                $("#cvs6").css("display", "none");
+                                                                $("#cvs5").css("display", "block");*/
+                                                                $.ajax({
+                                                                        url: "https://auth.score.net.co:8243/consultas-unidades/1.0.0/estados?unidad="+Unidad,
+                                                                        type: 'GET',
+                                                                        dataType: 'json',
+                                                                        async: false,
+                                                                        success: function(respuesta) {
+                                                                            estados = respuesta
+                                                                            
+                                                                                //layer_areas_prueba_1.clearLayers();
+                                                                        }
+                                                                    })
+                                                                    var estado=estados[0].data;
+                                                                if (estado=='MANT' || estado=='OFFLINE'){
+                                                                    document.getElementById('grafica1').innerHTML = "<div> <p style='color:#68b9a6; position: absolute; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 38%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica1_responsive').innerHTML = "<div> <p style='color:#68b9a6; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 44%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica2').innerHTML = "<div> <p style='color:#68b9a6; position: absolute; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 38%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica2_responsive').innerHTML = "<div> <p style='color:#68b9a6; text-align: center; font-weight: bold;'><img  style='height: auto; width: 40%; margin-top: 10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica3').innerHTML = "<div> <p style='color:#68b9a6; position: absolute; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 38%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica3_responsive').innerHTML = "<div> <p style='color:#68b9a6; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 44%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('valorCaja4').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja4_responsive').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja5').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja5_responsive').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja6').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja6_responsive').innerHTML = "<p>Mantenimiento</p>";
+                                                                        $("#mi_tabla").empty();
+                                                                        $('#caja1').text("Mantenimiento");
+                                                                        $('#caja1_responsive').text("Mantenimiento");
+                                                                        $('#caja2').text("Mantenimiento");
+                                                                        $('#caja2_responsive').text("Mantenimiento");
+                                                                        $('#caja3').text("Mantenimiento");
+                                                                        $('#caja3_responsive').text("Mantenimiento");
+                                                                        $('#caja4').text("Mantenimiento");
+                                                                        $('#caja4_responsive').text("Mantenimiento");
+                                                                        $('#caja5').text("Mantenimiento");
+                                                                        $('#caja5_responsive').text("Mantenimiento");
+                                                                        $('#caja6').text("Mantenimiento");
+                                                                        $('#caja6_responsive').text("Mantenimiento");
+                                                                        
+                                                                    }
+                                                                console.log("Meteo", Unidad)
+                                                                console.log("tipoEvento", tipoEvento)
+                                                                console.log("idTipoEvento", idTipoEvento)
+                                                                //clienteEventos(tipoEvento, idTipoEvento);
+                                                                //clienteMeteo(Unidad);
+                                                                clienteInicial(estado,Unidad);
+                                                                
+                                                                break;
+                                                            }
+                                                        } // Cierra for Variables
+                                                    } // Cierra if (Unidad == IdUnidadtr)
+                                                }
+                                                }
+                                                else {
+                                                    $.ajax({
+                                                    url: "https://auth.score.net.co:8243/consultas-unidades/1.0.0/estados?unidad="+topic,
+                                                    type: 'GET',
+                                                    dataType: 'json',
+                                                    async: false,
+                                                    success: function(respuesta) {
+                                                        estados = respuesta
+                                                        
+                                                            //layer_areas_prueba_1.clearLayers();
+                                                    }
+                                                })
+                                                var estado=estados[0].data;
+                                                if (estado=='MANT' || estado=='OFFLINE'){
+                                                    document.getElementById('grafica1').innerHTML = "<div> <p style='color:#68b9a6; position: absolute; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 38%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica1_responsive').innerHTML = "<div> <p style='color:#68b9a6; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 44%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica2').innerHTML = "<div> <p style='color:#68b9a6; position: absolute; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 38%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica2_responsive').innerHTML = "<div> <p style='color:#68b9a6; text-align: center; font-weight: bold;'><img  style='height: auto; width: 40%; margin-top: 10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica3').innerHTML = "<div> <p style='color:#68b9a6; position: absolute; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 38%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('grafica3_responsive').innerHTML = "<div> <p style='color:#68b9a6; text-align: center; font-weight: bold; margin-top: 13%;'><img  style='height: auto; width: 44%; margin-top: -10%;' src='../static/imagenes/mantenimiento.png'></p></div>";
+                                                                        document.getElementById('valorCaja4').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja4_responsive').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja5').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja5_responsive').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja6').innerHTML = "<p>Mantenimiento</p>";
+                                                                        document.getElementById('valorCaja6_responsive').innerHTML = "<p>Mantenimiento</p>";
+                                                                        $("#mi_tabla").empty();
+                                                                        $('#caja1').text("Mantenimiento");
+                                                                        $('#caja1_responsive').text("Mantenimiento");
+                                                                        $('#caja2').text("Mantenimiento");
+                                                                        $('#caja2_responsive').text("Mantenimiento");
+                                                                        $('#caja3').text("Mantenimiento");
+                                                                        $('#caja3_responsive').text("Mantenimiento");
+                                                                        $('#caja4').text("Mantenimiento");
+                                                                        $('#caja4_responsive').text("Mantenimiento");
+                                                                        $('#caja5').text("Mantenimiento");
+                                                                        $('#caja5_responsive').text("Mantenimiento");
+                                                                        $('#caja6').text("Mantenimiento");
+                                                                        $('#caja6_responsive').text("Mantenimiento");
+                                                    
+                                                }
+                                                else{
+                                                $("#mi_tabla").empty();
+                                                var r = "";
+                                                var Unidad;
+                                                var Variables;
+                                                var tipoEvento;
+                                                var idTipoEvento;
+                                                var datoInicial;
+                                                var datoInicialDia;
+                                                nuevasUnidades(estado,topic);}}
+                                                //nuevasCajas(topic);
+                                                 // Cierra for datos
+                                                break;
+                                        }
+
+                                    }, false);
+                               </script>
+                                <div id="meta2">
+                                    <div class="panel panel-primary" style="width:240px;background:#80000000;border:0px;">
+                                        <div class="panel-body">
+                                            <center>
+                                               <!-- <div id="progreso" style="display:none;">
+                                                    <div class="loading" style="color: black;"><img src="../static/imagenes/loading2.gif" width="200px" alt="loading" /><br /><strong>Un momento, por favor...</strong></div>
+                                                </div>-->
+                                            </center>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="meta3">
+                                    <div class="panel panel-primary" style="width:200px;border:0px; background:#c2c8cda3;">
+                                        <div style="width: 200px; background-color: #253840!important;" class="panel-heading">
+                                            <center>Herramientas</center>
+                                        </div>
+                                        <div class="panel-body">
+                                            <center>
+                                                <div class="btn-group">
+                                                    <button data-dojo-type="dijit/form/Button" type="button" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span></button>
+                                                    <button type="button" class="btn btn-primary" style="margin-left:2px;"><span class="glyphicon glyphicon-pencil"></span></button>
+                                                    <button type="button" class="btn btn-primary" style="margin-left:2px;"><span class="glyphicon glyphicon-trash"></span></button>
+                                                    <button onclick="cerrar()" type="button" class="btn btn-primary" style="margin-left:2px;"><span class="glyphicon glyphicon-remove"></span></button>
+                                                </div>
+                                            </center>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!--final mapa-->
+        </div>
+        </div>
+       
+        <!--<div id="progreso">
+            <div class="loading" style="color: black;"><img src="../static/imagenes/loading2.gif" width="200px" alt="loading" /><br /><strong>Un momento, por favor...</strong></div>
+        </div>pre-->       
+
+    </div>
+    <!--Funciones para el menu responsive-->
+<script>
+    function boton_deslizar(){
+        const menu_id= document.getElementById('E1');
+        menu_id.contentWindow.postMessage(['responsive','deslizar'], '*');
+
+    }
+    function boton_buscar(){
+        const menu_id= document.getElementById('E1');
+        menu_id.contentWindow.postMessage(['responsive','buscar'], '*');
+
+    }
+    function boton_estadisticas(){
+        const menu_id= document.getElementById('E1');
+        menu_id.contentWindow.postMessage(['responsive','estadisticas'], '*');
+
+    }
+    function boton_bpm(){
+        const menu_id= document.getElementById('E1');
+        menu_id.contentWindow.postMessage(['responsive','bpm'], '*');
+
+    }
+    function boton_salir(){
+        const menu_id= document.getElementById('E1');
+        menu_id.contentWindow.postMessage(['responsive','salir'], '*');
+
+    }
+    function zonas_botones(id){
+        const menu_id= document.getElementById('E1');
+        menu_id.contentWindow.postMessage(['botones_responsive',id], '*');
+    }
+</script>
+<!--fin funciones del menu responsive-->
+    <script>
+        $("#menu-toggle2").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").removeClass("toggled2");
+        $("#wrapper").addClass("toggled");
+        });
+</script> 
+<script>
+    $("#menu-toggle3").click(function(e) {
+    e.preventDefault();
+    $("#wrapper").removeClass("toggled3");
+    $("#wrapper").addClass("toggled");
+    });
+    $("#menu-toggle1").click(function(e) {
+    e.preventDefault();
+    $("#wrapper").removeClass("toggled1");
+    $("#wrapper").addClass("toggled");
+    });
+    
+    $("#sel1-1").click(function(e) {
+    e.preventDefault();
+    $("#wrapper").removeClass("toggled3");
+    $("#wrapper").addClass("toggled");
+    });
+</script> 
+
+    <script>
+        $('[rel="tooltip"]').tooltip({
+            trigger: 'hover'
+        })
+
+        // Función para aplicar el respectivo modal a cada unidad.
+        function modalFunc() {
+            if (modalVariable == 'meteorologica') {
+                $('#modalMeteorologica').modal('show');
+                //alert("meteorologica");
+            }
+            if (modalVariable == 'meteorologica2') {
+                $('#modalMeteorologica2').modal('show');
+                //alert("meteorologica");
+            }
+            if (modalVariable == 'inundaciones') {
+                $('#modalInundacion').modal('show');
+                //alert("inundaciones");
+            }
+            if (modalVariable == 'deslizamientos') {
+                $('#modalDeslizamiento').modal('show');
+                //alert("deslizamientos");
+            }
+            if (modalVariable == 'microlidar') {
+                $('#modallidar').modal('show');
+                //alert("deslizamientos");
+            }
+        }
+
+        function clickCheck(cb) {
+            processDisactive(cb.id, cb.name, cb.checked)
+                //display("Clicked, new value = " + cb.checked);
+        }
+    </script>
+
+    <script>
+        $("#menu-toggle").click(function(e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+            $("#menutoggle2").click(function(e) {
+                e.preventDefault();
+                $("#wrapper").toggleClass("toggled2");
+            });
+            $("#menutoggle3").click(function(e) {
+                e.preventDefault();
+                $("#wrapper").toggleClass("toggled3");
+            });
+        });
+    </script>
+
+    <script>
+        $("#menutoggle2").click(function(e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled2");
+            /*$("#wrapper").addClass("toggled");*/
+        });
+    </script>
+
+    <script>
+        window.addEventListener('message', function(e) {
+
+        var eventName = e.data[0];
+        const data = e.data;
+        if (eventName == 'var_close') {
+            console.log('cerrar12')
+            e.preventDefault();
+            $("#wrapper").removeClass("toggled1");
+            $("#wrapper").addClass("toggled");
+            $("#wrapper").removeClass("toggled3");
+        }
+        else if (eventName=='boton_deslizar'){
+            if (e.data[1]=='pausa'){
+                const boton_deslizamiento = document.getElementById('E1');
+                const message = 'pausa';
+                boton_deslizamiento.contentWindow.postMessage(['boton_deslizar',message], '*');
+
+            }
+        }
+        else if (eventName=='deslizar'){
+            if (e.data[1]=='pausa'){
+                document.getElementById("boton_play").className="fa fa-stop-circle"
+
+            }
+            else if (e.data[1]=='play'){
+                document.getElementById("boton_play").className="fa fa-play-circle"
+            }
+        }
+        else if (eventName=='botones_responsive'){
+            //console.log(e.data[1]);
+            $('#botones_responsive').html(e.data[1]);
+        }
+        else if(eventName=='responsive'){
+            if (e.data[1]=='mapa'){
+                document.getElementById("texto_estadisticas").style = "font-size: 14px; font-weight: bolder; color: #ffffff;";
+                document.getElementById("texto_estadisticas").textContent="ESTADISTICAS";
+                document.getElementById("boton_estadisticas").className="fa fa-line-chart";
+
+            }
+            else if (e.data[1]=='estadisticas'){
+                document.getElementById("texto_estadisticas").style = "font-size: 14px; font-weight: bolder; color: #ffffff;";
+                document.getElementById("texto_estadisticas").textContent="MONITOREO";
+                document.getElementById("boton_estadisticas").className="fa fa-globe";
+            }
+        }
+        else if (e.data == 'barral') {
+            e.preventDefault();
+            $("#wrapper").removeClass("toggled1");
+            $("#wrapper").addClass("toggled2");
+            $("#wrapper").removeClass("toggled3");
+
+        }
+        else if (e.data == 'barral1') {
+            e.preventDefault();
+            $("#wrapper").removeClass("toggled1");
+            $("#wrapper").removeClass("toggled2");
+            $("#wrapper").addClass("toggled3");
+
+        }
+        else if (e.data == 'indicadores12') {
+            e.preventDefault();
+            $("#imagenin").toggleClass("none1");
+
+        }
+        else if (e.data=='estadisticas'){
+            const menu_id= document.getElementById('E1');
+            menu_id.contentWindow.postMessage(['grafana','graficas'], '*');
+            var mapa_id= document.getElementById('E2');
+            $.ajax({
+                    url: "https://auth.score.net.co:8243/consultas-unidades/1.0.0/grafana_principal?cliente="+id_cliente,
+                    type: 'GET',
+                    dataType: 'json',
+                    async: false,
+                    success: function(respuesta) {
+                        zonas_cliente = respuesta
+                        
+                            //layer_areas_prueba_1.clearLayers();
+                    }
+                })
+            mapa_id.src="https://spad.com.co/grafana/"+zonas_cliente[0].data+'&kiosk=tv';
+            var mapa_id= document.getElementById('E2');
+            $.ajax({
+                    url: "https://auth.score.net.co:8243/consultas-unidades/1.0.0/grafana_principal?cliente="+id_cliente,
+                    type: 'GET',
+                    dataType: 'json',
+                    async: false,
+                    success: function(respuesta) {
+                        zonas_cliente = respuesta
+                        
+                            //layer_areas_prueba_1.clearLayers();
+                    }
+                })
+            //mapa_id.src="https://spad.com.co/grafana/"+zonas_cliente[0].data+'&kiosk=tv';    
+            mapa_id.src="https://spad.com.co/grafana/"+zonas_cliente[0].data+'&kiosk=tv';
+            document.getElementById("imagenin").style.visibility = "hidden";
+            document.getElementById("titulo_principal").textContent="Estadísticas de Unidades";
+            //mapa_id.src="http://localhost:"+grafana+"/d/Zz_Nhup7z/principal?orgId=1"+'&kiosk=tv';
+
+        }
+        else if (e.data=='mapa'){
+            const menu_id= document.getElementById('E1');
+            menu_id.contentWindow.postMessage(['grafana','mapa'], '*');
+            const mapa_id= document.getElementById('E2');
+            mapa_id.src="../static/imagenes/qgis/index.html?"+id_cliente;
+            document.getElementById("imagenin").style.visibility = "visible";
+            document.getElementById("titulo_principal").textContent="Mapa de Ubicación de Unidades";
+        }
+        else {
+            zonas_qgis(e.data);
+            if (e.data[0]!='varName'){
+            fetch('https://auth.score.net.co:8243/consultas-unidades/1.0.0/principal_inicial?zona='+e.data, headerspad)
+                        .then(function(respuesta)
+                        {
+                                // Convertir a JSON
+                                return respuesta.json();
+                        }).then(function(respuesta)
+                        {
+                                unidad_inicial=respuesta[0].data;
+                                
+                                if (id_cliente!='9007586290' && unidad_inicial!=null){
+                                    console.log(unidad_inicial)
+                                    nuevasUnidades('ONLINE',unidad_inicial);
+                                } 
+                                if (unidad_inicial==null && id_cliente!='9007586290'){
+                                    document.getElementById('grafica1').innerHTML = '';
+                                    document.getElementById('grafica2').innerHTML = '';
+                                    document.getElementById('grafica3').innerHTML = '';
+                                    document.getElementById('valorCaja4').innerHTML = '';
+                                    document.getElementById('valorCaja5').innerHTML = '';
+                                    document.getElementById('valorCaja6').innerHTML = '';
+                                    $("#mi_tabla").empty();
+                                    $('#caja1').text("");
+                                    $('#caja2').text("");
+                                    $('#caja3').text("");
+                                    $('#caja4').text("");
+                                    $('#caja5').text("");
+                                    $('#caja6').text("");
+                                }
+                        });
+        }}
+            switch (eventName) {
+                case 'cliente':
+                    const frameEle = document.getElementById('E2');
+                    const message = 'centrar_cliente';
+                    frameEle.contentWindow.postMessage(['centrar_cliente',message], '*');
+                    break;
+                case 'grafana':
+                if (e.data[1]=='centrar_panel'){
+                        $.ajax({
+                            url: "https://auth.score.net.co:8243/consultas-unidades/1.0.0/grafana_principal?cliente="+id_cliente,
+                            type: 'GET',
+                            dataType: 'json',
+                            async: false,
+                            success: function(respuesta) {
+                                zonas_cliente = respuesta
+                                
+                                    //layer_areas_prueba_1.clearLayers();
+                            }
+                        })
+                    var mapa_id= document.getElementById('E2');
+                    mapa_id.src="https://spad.com.co/grafana/"+zonas_cliente[0].data+'&kiosk=tv';
+                    $.ajax({
+                            url: "https://auth.score.net.co:8243/consultas-unidades/1.0.0/grafana_principal?cliente="+id_cliente,
+                            type: 'GET',
+                            dataType: 'json',
+                            async: false,
+                            success: function(respuesta) {
+                                zonas_cliente = respuesta
+                                
+                                    //layer_areas_prueba_1.clearLayers();
+                            }
+                        })
+                    var mapa_id= document.getElementById('E2');
+                    mapa_id.src="https://spad.com.co/grafana/"+zonas_cliente[0].data+'&kiosk=tv';
+                
+                }
+                    else{
+                    zonas_qgis(e.data[1]);
+                    $.ajax({
+                            url: "https://auth.score.net.co:8243/consultas-unidades/1.0.0/grafana?zona="+e.data[1],
+                            type: 'GET',
+                            dataType: 'json',
+                            async: false,
+                            success: function(respuesta) {
+                                zonas_cliente = respuesta
+                                
+                                    //layer_areas_prueba_1.clearLayers();
+                            }
+                        })
+                    var mapa_id= document.getElementById('E2');
+                    mapa_id.src="https://spad.com.co/grafana/"+zonas_cliente[0].data+'&kiosk=tv';
+                    zonas_qgis(e.data[1]);
+                    $.ajax({
+                            url: "https://auth.score.net.co:8243/consultas-unidades/1.0.0/grafana?zona="+e.data[1],
+                            type: 'GET',
+                            dataType: 'json',
+                            async: false,
+                            success: function(respuesta) {
+                                zonas_cliente = respuesta
+                                
+                                    //layer_areas_prueba_1.clearLayers();
+                            }
+                        })
+                    var mapa_id= document.getElementById('E2');
+                    mapa_id.src="https://spad.com.co/grafana/"+zonas_cliente[0].data+'&kiosk=tv';
+                }
+                    break;
+                case 'cerrar_sesion':
+                    window.location.replace("https://auth.score.net.co:9443/oidc/logout");
+
+                case 'varName':
+                    id_unidad_qgis = data
+                    console.log('id-unidad: ', id_unidad_qgis);
+                    e.preventDefault();
+                    $("#wrapper").addClass("toggled1");
+                    $("#wrapper").removeClass("toggled2");
+                    $("#wrapper").removeClass("toggled3");
+                    break;
+            }
+        }, false);
+    </script>
+
+<script>
+    //modificacion para enviar alertas al menu para el cambio de color del indicador
+    const frameEle = document.getElementById('E2');
+    const estadoMenu = document.getElementById('E1');
+    function busqueda_unidades(id_unidad_busqueda,x_zona){
+        const message = id_unidad_busqueda;
+        frameEle.contentWindow.postMessage(['busqueda',id_unidad_busqueda], '*');
+        frameEle.contentWindow.postMessage(['seleccionar',x_zona], '*');
+    }
+    function zonas_qgis(x_zona) {
+        zona_seleccionada=x_zona;
+        const message = x_zona;
+        frameEle.contentWindow.postMessage(message, '*');
+        seleccionar_zona(x_zona);
+        for (var i = 0; i < estados_click.length ; i++) {
+            if (estados_click[i] == 4) {
+                estados_click[i] = 0;
+            }
+        }
+        for (var i = 0; i < zonas_color.length ; i++) {
+        if (x_zona==zonas_color[i])
+            {   var imagen="#"+x_zona;
+                estados_click[i] = 4;
+                estados[i]=0;
+                const message2 = x_zona+"_normal";
+                estadoMenu.contentWindow.postMessage(message2, '*');
+                $(imagen).attr('src', '../static/imagenes/menu/img/alerta0.png');
+                var max = Math.max(...estados);
+                if (max==0){
+                    const message1 = 'principal_normal';
+                    estadoMenu.contentWindow.postMessage(message1, '*');
+                    $('#principal').attr('src', '../static/imagenes/menu/img/alerta0.png');
+                }
+                if (max==1){
+                    const message1 = 'principal_amarilla';
+                    estadoMenu.contentWindow.postMessage(message1, '*');
+                    $('#principal').attr('src', '../static/imagenes/menu/img/alerta3.png');
+                }
+                if (max==2){
+                    const message1 = 'principal_naranja';
+                    estadoMenu.contentWindow.postMessage(message1, '*');
+                    $('#principal').attr('src', '../static/imagenes/menu/img/alerta1.png');
+                }
+                if (max==3){
+                    const message1 = 'principal_rojo';
+                    estadoMenu.contentWindow.postMessage(message1, '*');
+                    $('#principal').attr('src', '../static/imagenes/menu/img/alerta2.png');
+                }
+                break;
+
+        }}
+     
+    }
+        
+
+    
+
+    /*function guanabano() {
+        const message = 'guanabano';
+        frameEle.contentWindow.postMessage(message, '*');
+        guanabano_zona();
+        const message1 = 'guanabano_normal';
+        estadoMenu.contentWindow.postMessage(message1, '*');
+
+        for (var i = 1; i < estados.length - 1; i++) {
+            if (estados[i] == 4) {
+                estados[i] = 1;
+            }
+        }
+        if (estados[1] == 1 && estados[2] == 1 && estados[3] == 1) {
+            estados[0] = 1;
+            const message2 = 'principal_normal';
+            estadoMenu.contentWindow.postMessage(message2, '*');
+        }
+        estados[4] = 4;
+    }*/
+
+    function zonas_colores(x_zona,color) {
+        const message = x_zona+"_"+color;
+        var imagen="#"+x_zona
+        for (var i = 0; i < zonas_color.length ; i++) {
+        if (x_zona==zonas_color[i]){
+            console.log('--------------------------->',estados_click)
+            if(color=="Roja"){
+            if (estados[i] <= 3 && estados_click[i]!=4) {
+            estados[i] = 3;
+            estadoMenu.contentWindow.postMessage(message, '*'); }
+            $(imagen).attr('src', '../static/imagenes/menu/img/alerta2.png');
+        }
+            if(color=="Naranja"){
+            if (estados[i] <= 2 && estados_click[i]!=4) {
+            estados[i] = 2;
+            estadoMenu.contentWindow.postMessage(message, '*');}
+            $(imagen).attr('src', '../static/imagenes/menu/img/alerta1.png');
+        }
+            if(color=="Amarilla"){
+            if (estados[i] <= 1 && estados_click[i]!=4) {
+            estados[i] = 1;
+            estadoMenu.contentWindow.postMessage(message, '*');}
+            $(imagen).attr('src', '../static/imagenes/menu/img/alerta3.png');
+        
+        }
+     
+    }
+
+    }
+    var max = Math.max(...estados);
+    if (max==3){
+        const message1 = 'principal_rojo';
+        estadoMenu.contentWindow.postMessage(message1, '*');
+        $('#principal').attr('src', '../static/imagenes/menu/img/alerta2.png');
+    }
+    if (max==2){
+        const message1 = 'principal_naranja';
+        estadoMenu.contentWindow.postMessage(message1, '*');
+        $('#principal').attr('src', '../static/imagenes/menu/img/alerta1.png');
+    }
+    if (max==1){
+        const message1 = 'principal_amarilla';
+        estadoMenu.contentWindow.postMessage(message1, '*');
+        $('#principal').attr('src', '../static/imagenes/menu/img/alerta3.png');
+    }
+
+}
+
+   
+</script>
+
+    <script>
+        const frameEle = document.getElementById('menutoggle2');
+
+        function barral() {
+            const message = 'barral';
+            frameEle.contentWindow.postMessage(message, '*');
+        }
+        const frameEle = document.getElementById('menutoggle3');
+
+        function barral1() {
+            const message = 'barral1';
+            frameEle.contentWindow.postMessage(message, '*');
+        }
+        const frameEle = document.getElementById('indicadores1');
+        function indicadores12() {
+            const message = 'indicadores12';
+            frameEle.contentWindow.postMessage(message, '*');
+        }
+    </script>
+        <script>
+            $("#indicadores1").click(function(e) {
+                e.preventDefault();
+                $("#imagenin").addClass("none1");
+            });
+        </script>
+
+        <script>
+    $(document).ready(function(){
+    $(".button a").click(function(){
+        $(".overlay").fadeToggle(200);
+       $(".button a").toggleClass('btn-open').toggleClass('btn-close');
+    });
+    });
+    $(document).ready(function(){
+        $("#boton_play").click(function(){
+        $(".overlay").fadeToggle(200);
+        $(".button a").toggleClass('btn-open').toggleClass('btn-close');
+        });
+    });
+    $(document).ready(function(){
+    $("#boton_buscar").click(function(){
+        $(".overlay").fadeToggle(200);
+       $(".button a").toggleClass('btn-open').toggleClass('btn-close');
+    });
+    });
+    $(document).ready(function(){
+        $("#boton_estadisticas").click(function(){
+        $(".overlay").fadeToggle(200);
+        $(".button a").toggleClass('btn-open').toggleClass('btn-close');
+        });
+    });
+    $(document).ready(function(){
+        $("#botones_responsive").click(function(){
+        $(".overlay").fadeToggle(200);
+        $(".button a").toggleClass('btn-open').toggleClass('btn-close');
+        });
+    });
+
+
+
+
+        </script>
+    <script src="../static/js/odometro.js"></script>
+    <script src="../static/js/termometro.js"></script>
+
+</body>
+
+</html>
